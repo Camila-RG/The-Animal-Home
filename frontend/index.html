@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Animal Home</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header>
+    <div class="logo-container">
+      <img src="frontend/images/logo.png" alt="Logo" class="logo">
+      <h1>The Animal Home</h1>
+    </div>
+    <nav>
+      <button onclick="mostrarSessao('login')">Login</button>
+      <button onclick="mostrarSessao('animais')">Ver Animais</button>
+      <button onclick="mostrarSessao('disponiveis')">Disponíveis</button>
+    </nav>
+  </header>
+
+  <!-- Conteúdo principal -->
+  <main>
+    <!-- Sessão Login -->
+    <section id="login" class="sessao ativa">
+      <h2>Login</h2>
+      <form id="formLogin">
+        <input type="text" placeholder="Usuário" required>
+        <input type="password" placeholder="Senha" required>
+        <button type="submit">Entrar</button>
+      </form>
+    </section>
+
+    <!-- Sessão Ver Animais -->
+    <section id="animais" class="sessao">
+      <h2>Lista de Animais</h2>
+      <div id="lista-animais">
+        <!-- Conteúdo gerado via JS -->
+      </div>
+    </section>
+
+    <!-- Sessão Disponíveis -->
+    <section id="disponiveis" class="sessao">
+      <h2>Animais Disponíveis para Adoção</h2>
+      <div id="animais-disponiveis">
+        <!-- Conteúdo gerado via JS -->
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</

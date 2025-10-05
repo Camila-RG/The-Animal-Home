@@ -1,0 +1,105 @@
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background-color: #fff;
+  color: #333;
+}
+
+/* Cabeçalho */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f9f9f9;
+  padding: 10px 40px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  height: 50px;
+  width: 50px;
+}
+
+nav button {
+  margin-left: 15px;
+  padding: 8px 16px;
+  border: none;
+  background-color: #c18ce3;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+nav button:hover {
+  background-color: #a465cf;
+}
+
+/* Seções principais */
+main {
+  padding: 40px;
+  text-align: center;
+}
+
+.sessao {
+  display: none;
+}
+
+.sessao.ativa {
+  display: block;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: 0 auto;
+}
+
+form input {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+form button {
+  padding: 10px;
+  background-color: #c18ce3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+form button:hover {
+  background-color: #a465cf;
+}
+
+.card {
+  display: inline-block;
+  width: 200px;
+  background-color: #fdf9ff;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.card h3 {
+  margin-top: 10px;
+  color: #a465cf;
+}
