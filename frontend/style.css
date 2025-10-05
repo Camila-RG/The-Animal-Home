@@ -1,6 +1,7 @@
+/* Fonte principal do site */
 body {
   margin: 0;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   background-color: #fff;
   color: #333;
 }
@@ -10,9 +11,9 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f9f9f9;
-  padding: 10px 40px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  background-color: #f5f5f5;
+  padding: 15px 40px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .logo-container {
@@ -26,23 +27,33 @@ header {
   width: 50px;
 }
 
+/* Nome do site */
+h1 {
+  color: #b79de8;
+  font-family: 'Moul', sans-serif;
+  font-size: 2em;
+  margin: 0;
+}
+
+/* Navegação */
 nav button {
   margin-left: 15px;
   padding: 8px 16px;
   border: none;
-  background-color: #c18ce3;
+  background-color: #b79de8;
   color: white;
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
   transition: 0.3s;
+  font-family: 'Poppins', sans-serif;
 }
 
 nav button:hover {
-  background-color: #a465cf;
+  background-color: #a06ed1;
 }
 
-/* Seções principais */
+/* Sessões */
 main {
   padding: 40px;
   text-align: center;
@@ -56,6 +67,48 @@ main {
   display: block;
 }
 
+/* Banner da página inicial */
+.banner {
+  background-color: #fdf9ff;
+  border-radius: 12px;
+  padding: 60px 20px;
+  margin: 0 auto;
+  max-width: 800px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.banner h2 {
+  color: #b79de8;
+  font-size: 2em;
+  margin-bottom: 10px;
+  font-family: 'Moul', sans-serif;
+}
+
+.banner p {
+  color: #555;
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* Botão de ação do banner */
+.btn-acao {
+  background-color: #ff9fbf;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 25px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-acao:hover {
+  background-color: #e681a8;
+}
+
+/* Formulário */
 form {
   display: flex;
   flex-direction: column;
@@ -68,29 +121,71 @@ form input {
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  font-family: 'Poppins', sans-serif;
 }
 
 form button {
   padding: 10px;
-  background-color: #c18ce3;
+  background-color: #b79de8;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
+  font-family: 'Poppins', sans-serif;
 }
 
 form button:hover {
-  background-color: #a465cf;
+  background-color: #a06ed1;
 }
 
+/* Filtros */
+.filtros {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filtros select, .filtros button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: 'Poppins', sans-serif;
+}
+
+.filtros button {
+  background-color: #b79de8;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.filtros button:hover {
+  background-color: #a06ed1;
+}
+
+/* Área de lista de animais */
+#lista-animais, #animais-disponiveis {
+  background-color: #ffe6f0; /* rosinha discreto */
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* Cards de animais */
 .card {
   display: inline-block;
   width: 200px;
   background-color: #fdf9ff;
   border-radius: 10px;
   padding: 15px;
-  margin: 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
@@ -101,5 +196,25 @@ form button:hover {
 
 .card h3 {
   margin-top: 10px;
-  color: #a465cf;
+  color: #b79de8;
+  font-family: 'Poppins', sans-serif;
+}
+
+.card p {
+  font-family: 'Poppins', sans-serif;
+}
+
+.card button {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #ff9fbf;
+  color: white;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+}
+
+.card button:hover {
+  background-color: #e681a8;
 }

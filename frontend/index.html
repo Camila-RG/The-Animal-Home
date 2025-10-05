@@ -4,26 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Animal Home</title>
+
+  <!-- Fontes -->
+  <link href="https://fonts.googleapis.com/css2?family=Moul&family=Poppins&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Cabeçalho -->
   <header>
     <div class="logo-container">
-      <img src="frontend/images/logo.png" alt="Logo" class="logo">
+      <img src="images/logo.png" alt="Logo The Animal Home" class="logo">
       <h1>The Animal Home</h1>
     </div>
     <nav>
+      <button onclick="mostrarSessao('inicio')">Início</button>
       <button onclick="mostrarSessao('login')">Login</button>
       <button onclick="mostrarSessao('animais')">Ver Animais</button>
       <button onclick="mostrarSessao('disponiveis')">Disponíveis</button>
     </nav>
   </header>
 
-  <!-- Conteúdo principal -->
   <main>
-    <!-- Sessão Login -->
-    <section id="login" class="sessao ativa">
+    <!-- Página inicial -->
+    <section id="inicio" class="sessao ativa">
+      <div class="banner">
+        <h2>Adotar é um ato de amor 💜</h2>
+        <p>O The Animal Home conecta corações. Nossa missão é dar uma nova chance a cães e gatos, oferecendo um lar cheio de carinho e cuidado.</p>
+        <p>Cada adoção transforma duas vidas: a do animal e a de quem o acolhe. Venha fazer parte dessa família de amor e esperança!</p>
+        <button class="btn-acao" onclick="mostrarSessao('animais')">Conheça nossos animais</button>
+      </div>
+    </section>
+
+    <!-- Login -->
+    <section id="login" class="sessao">
       <h2>Login</h2>
       <form id="formLogin">
         <input type="text" placeholder="Usuário" required>
@@ -32,23 +46,46 @@
       </form>
     </section>
 
-    <!-- Sessão Ver Animais -->
+    <!-- Lista de animais -->
     <section id="animais" class="sessao">
       <h2>Lista de Animais</h2>
-      <div id="lista-animais">
-        <!-- Conteúdo gerado via JS -->
+
+      <!-- Filtros -->
+      <div class="filtros">
+        <select id="filtro-especie">
+          <option value="">Todas as espécies</option>
+          <option value="Gato">Gato</option>
+          <option value="Cachorro">Cachorro</option>
+        </select>
+
+        <select id="filtro-porte">
+          <option value="">Todos os portes</option>
+          <option value="Pequeno">Pequeno</option>
+          <option value="Médio">Médio</option>
+          <option value="Grande">Grande</option>
+        </select>
+
+        <select id="filtro-idade">
+          <option value="">Todas as idades</option>
+          <option value="0-1">0-1 ano</option>
+          <option value="2-4">2-4 anos</option>
+          <option value="5+">5 anos ou mais</option>
+        </select>
+
+        <button onclick="aplicarFiltros()">Filtrar</button>
       </div>
+
+      <div id="lista-animais"></div>
     </section>
 
-    <!-- Sessão Disponíveis -->
+    <!-- Animais disponíveis -->
     <section id="disponiveis" class="sessao">
       <h2>Animais Disponíveis para Adoção</h2>
-      <div id="animais-disponiveis">
-        <!-- Conteúdo gerado via JS -->
-      </div>
+      <div id="animais-disponiveis"></div>
     </section>
   </main>
 
+  <!-- JS -->
   <script src="script.js"></script>
 </body>
-</
+</html>
