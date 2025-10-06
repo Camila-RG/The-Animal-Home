@@ -55,10 +55,11 @@ Funcionários têm acesso exclusivo para gerenciar os animais, acompanhar o hist
 
 ## 📸 Demonstração Visual
 
-| Página                      | Imagem                                                                       |
-| --------------------------- | ---------------------------------------------------------------------------- |
-| 🏡 **Página Inicial**       | ![Home](https://via.placeholder.com/800x400.png?text=Página+Inicial)         |
-| 💜 **Carrinho de Adoção**   | ![Carrinho](https://via.placeholder.com/800x400.png?text=Carrinho+de+Adoção) |
-| 🔐 **Login do Funcionário** | ![Login](https://via.placeholder.com/800x400.png?text=Login+Funcionário)     |
+| Página                      | Imagem                                 |
+| --------------------------- | -------------------------------------- |
+| 🏡 **Página Inicial**       | ![Home](assets/home.png)               |
+| 💜 **Carrinho de Adoção**   | ![Carrinho](assets/carrinho.png)       |
+| 🔐 **Login do Funcionário** | ![Login](assets/login.png)             |
 
 ---
+
