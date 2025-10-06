@@ -1,227 +1,174 @@
-// Dados iniciais dos animais
+// ======== Dados Iniciais ========
 let animais = [
-  { id: 1, nome: "Luna", especie: "Gato", idade: 2, porte: "Pequeno", status: "Disponível", imagem: "https://placekitten.com/200/200" },
-  { id: 2, nome: "Thor", especie: "Cachorro", idade: 4, porte: "Médio", status: "Disponível", imagem: "https://placedog.net/200/200" },
-  { id: 3, nome: "Mel", especie: "Cachorro", idade: 1, porte: "Pequeno", status: "Disponível", imagem: "https://placedog.net/201/200" },
-  { id: 4, nome: "Jabuti", especie: "Jacaré", idade: 5, porte: "Grande", status: "Disponível", imagem: "https://placeimg.com/200/200/reptile" },
-  { id: 5, nome: "Galinha", especie: "Galinha", idade: 2, porte: "Pequeno", status: "Disponível", imagem: "https://placeimg.com/200/200/bird" }
+  { id:1, nome:"Luna", especie:"Gato", idade:2, porte:"Pequeno", status:"Disponível", imagem:"https://placekitten.com/200/200" },
+  { id:2, nome:"Thor", especie:"Cachorro", idade:4, porte:"Médio", status:"Disponível", imagem:"https://placedog.net/200/200" },
+  { id:3, nome:"Mel", especie:"Cachorro", idade:1, porte:"Pequeno", status:"Disponível", imagem:"https://placedog.net/201/200" },
+  { id:4, nome:"Jack", especie:"Jacaré", idade:3, porte:"Grande", status:"Disponível", imagem:"https://placeimg.com/200/200/reptile" },
+  { id:5, nome:"Gal", especie:"Galinha", idade:1, porte:"Pequeno", status:"Disponível", imagem:"https://placeimg.com/200/200/bird" }
 ];
 
-// Carrinho de adoção
 let carrinho = [];
 
-// Histórico de adoções
-let historicoAdocoes = [];
-
-// Mostrar sessão
-function mostrarSessao(id) {
+// ======== Sessões ========
+function mostrarSessao(id){
   document.querySelectorAll(".sessao").forEach(sec => sec.classList.remove("ativa"));
   document.getElementById(id).classList.add("ativa");
-  if(id === "animais") listarAnimais();
-  if(id === "inicio") document.getElementById("msg-confirmacao").innerHTML = "";
 }
 
-// Listar animais (cliente)
-function listarAnimais() {
-  const container = document.getElementById("animais-container");
-  container.innerHTML = "";
-  const especieFiltro = document.getElementById("filtro-especie").value;
-  const idadeFiltro = document.getElementById("filtro-idade").value;
-  const porteFiltro = document.getElementById("filtro-porte").value;
+// ======== Filtros ========
+function aplicarFiltros() {
+  const especie = document.getElementById("filtro-especie").value;
+  const idade = document.getElementById("filtro-idade").value;
+  const porte = document.getElementById("filtro-porte").value;
 
-  let filtrados = animais.filter(a => a.status === "Disponível");
+  let filtrados = animais.filter(a => a.status==="Disponível");
 
-  if(especieFiltro) filtrados = filtrados.filter(a => a.especie === especieFiltro);
-  if(porteFiltro) filtrados = filtrados.filter(a => a.porte === porteFiltro);
-  if(idadeFiltro){
-    if(idadeFiltro === "0-1") filtrados = filtrados.filter(a => a.idade <= 1);
-    if(idadeFiltro === "2-4") filtrados = filtrados.filter(a => a.idade >=2 && a.idade <=4);
-    if(idadeFiltro === "5+") filtrados = filtrados.filter(a => a.idade >=5);
+  if(especie) filtrados = filtrados.filter(a=>a.especie===especie);
+  if(idade){
+    if(idade==="5+") filtrados = filtrados.filter(a=>a.idade>=5);
+    else filtrados = filtrados.filter(a=>a.idade===parseInt(idade));
   }
+  if(porte) filtrados = filtrados.filter(a=>a.porte===porte);
 
-  if(filtrados.length === 0){
-    document.getElementById("msg-nao-encontrado").innerText = "Animal não consta no banco de dados.";
+  const container = document.getElementById("container-animais");
+  const msg = document.getElementById("msg-nao-encontrado");
+  if(filtrados.length===0){
+    container.innerHTML="";
+    msg.textContent="Animal não consta no banco de dados";
   } else {
-    document.getElementById("msg-nao-encontrado").innerText = "";
+    msg.textContent="";
+    container.innerHTML = filtrados.map(a=>`
+      <div class="card">
+        <img src="${a.imagem}" alt="${a.nome}">
+        <h3>${a.nome}</h3>
+        <p>${a.especie} - ${a.idade} anos</p>
+        <p>Porte: ${a.porte}</p>
+        <button onclick="adicionarCarrinho(${a.id})">Adotar</button>
+      </div>
+    `).join('');
   }
-
-  filtrados.forEach(a => {
-    const card = document.createElement("div");
-    card.classList.add("card");
-    card.innerHTML = `
-      <img src="${a.imagem}" alt="${a.nome}">
-      <h3>${a.nome}</h3>
-      <p>${a.especie} - ${a.idade} anos - ${a.porte}</p>
-      <button onclick="adicionarCarrinho(${a.id})">Adotar 💜</button>
-    `;
-    container.appendChild(card);
-  });
 }
 
-// Adicionar ao carrinho
-function adicionarCarrinho(id) {
-  const animal = animais.find(a => a.id === id);
+// ======== Carrinho ========
+const iconeCarrinho = document.getElementById("icone-carrinho");
+const popupCarrinho = document.getElementById("carrinho-popup");
+iconeCarrinho.addEventListener("click", ()=> popupCarrinho.style.display = popupCarrinho.style.display==="block"?"none":"block");
+
+function adicionarCarrinho(id){
+  const animal = animais.find(a=>a.id===id);
   if(!carrinho.includes(animal)){
     carrinho.push(animal);
     atualizarCarrinho();
-    subirCoracao();
+    coracaoSubindo();
   }
 }
 
-// Atualizar pop-up carrinho
-function atualizarCarrinho() {
-  const lista = document.getElementById("carrinho-list");
-  lista.innerHTML = carrinho.map(a => `<li>${a.nome} (${a.especie})</li>`).join('');
+function atualizarCarrinho(){
+  const ul = document.getElementById("carrinho-list");
+  ul.innerHTML = carrinho.map(a=>`<li>${a.nome}</li>`).join('');
 }
 
-// Mostrar/ocultar carrinho
-function toggleCarrinho() {
-  const popup = document.getElementById("carrinho-popup");
-  popup.style.display = popup.style.display === "block" ? "none" : "block";
+// ======== Coração subindo ========
+function coracaoSubindo(){
+  const heart = document.createElement("div");
+  heart.textContent="❤️";
+  heart.style.position="fixed";
+  heart.style.bottom="100px";
+  heart.style.right="80px";
+  heart.style.fontSize="24px";
+  heart.style.animation="subir 1s forwards";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),1000);
 }
 
-// Finalizar adoção
-function finalizarAdocao() {
-  if(carrinho.length === 0) return alert("Adicione pelo menos um animal ao carrinho!");
-  mostrarSessao("cadastro-adotante");
+const style = document.createElement('style');
+style.innerHTML = `
+@keyframes subir {
+  0% {opacity:1; transform:translateY(0);}
+  100% {opacity:0; transform:translateY(-50px);}
+}`;
+document.head.appendChild(style);
+
+// ======== Finalizar Adoção ========
+function finalizarAdocao(){
+  if(carrinho.length===0) { alert("Nenhum animal selecionado"); return; }
+  mostrarSessao("form-adocao");
 }
 
-// Enviar dados do adotante
-function submitAdotante(event){
-  event.preventDefault();
-  const form = event.target;
-  const dados = {
-    nome: form[0].value,
-    email: form[1].value,
-    telefone: form[2].value,
-    endereco: form[3].value,
-    animaisAdotados: [...carrinho]
-  };
-  historicoAdocoes.push(dados);
-
-  // Atualizar status dos animais
-  carrinho.forEach(a => a.status = "Adotado");
+// ======== Formulário de Adoção ========
+document.getElementById("adocao-form").addEventListener("submit", function(e){
+  e.preventDefault();
+  const nome = this[0].value;
+  const email = this[1].value;
+  const telefone = this[2].value;
+  document.getElementById("mensagem-final").innerHTML = `Parabéns, ${nome}! 💖<br>Você receberá em breve um contato por e-mail ou telefone para concluir a adoção dos seguintes animais:<br>${carrinho.map(a=>a.nome).join(", ")}`;
   carrinho = [];
   atualizarCarrinho();
+  popupCarrinho.style.display="none";
+  this.reset();
+});
 
-  // Mensagem final
-  mostrarSessao("inicio");
-  document.getElementById("msg-confirmacao").innerHTML = `
-    Obrigado, <b>${dados.nome}</b>! 💜<br>
-    Entraremos em contato pelo email ou telefone para agendar a adoção dos pets escolhidos.
-  `;
+// ======== Portal Funcionário ========
+const emailFunc = "funcionario@email";
+const senhaFunc = "bebeto321";
+
+document.getElementById("form-login-func").addEventListener("submit", function(e){
+  e.preventDefault();
+  const email = this[0].value;
+  const senha = this[1].value;
+  if(email===emailFunc && senha===senhaFunc){
+    this.classList.add("oculto");
+    document.getElementById("portal-conteudo").classList.remove("oculto");
+    carregarTabelaAnimais();
+    carregarTabelaAdocoes();
+  } else alert("Email ou senha incorretos!");
+});
+
+// Logout
+function sairFuncionario(){
+  document.getElementById("portal-conteudo").classList.add("oculto");
+  document.getElementById("form-login-func").classList.remove("oculto");
+  document.getElementById("form-login-func").reset();
 }
 
-// Portal do funcionário
-const FUNC_EMAIL = "funcionario@email";
-const FUNC_SENHA = "bebeto321";
-
-function loginFuncionario(event){
-  event.preventDefault();
-  const email = event.target[0].value;
-  const senha = event.target[1].value;
-  const portal = document.getElementById("portal-conteudo");
-  if(email === FUNC_EMAIL && senha === FUNC_SENHA){
-    portal.classList.remove("oculto");
-    listarAnimaisFuncionario();
-    listarHistoricoFuncionario();
-    mostrarEstatisticas();
-  } else {
-    alert("Email ou senha incorretos.");
-  }
-}
-
-// Listar animais (funcionário)
-function listarAnimaisFuncionario() {
-  const container = document.getElementById("animais-funcionario");
-  container.innerHTML = "";
-  animais.forEach(a => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${a.nome}</td>
-      <td>${a.especie}</td>
-      <td>${a.idade}</td>
-      <td>${a.porte}</td>
-      <td>${a.status}</td>
-      <td><button onclick="removerAnimal(${a.id})">Remover</button></td>
-    `;
-    container.appendChild(row);
+// ======== Tabelas Funcionário ========
+function carregarTabelaAnimais(){
+  const tbody = document.querySelector("#tabela-animais tbody");
+  tbody.innerHTML = "";
+  animais.forEach(a=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${a.nome}</td><td>${a.especie}</td><td>${a.idade}</td><td>${a.porte}</td><td>${a.status}</td>
+    <td><button onclick="removerAnimal(${a.id})">Remover</button></td>`;
+    tbody.appendChild(tr);
   });
 }
 
-// Cadastrar animal (funcionário)
-function cadastrarAnimal(event){
-  event.preventDefault();
-  const form = event.target;
+function carregarTabelaAdocoes(){
+  const tbody = document.querySelector("#tabela-adocoes tbody");
+  tbody.innerHTML = ""; // Aqui pode puxar histórico real
+}
+
+// ======== Cadastrar Animal ========
+document.getElementById("form-cadastro-animal").addEventListener("submit", function(e){
+  e.preventDefault();
   const novo = {
-    id: animais.length + 1,
-    nome: form[0].value,
-    especie: form[1].value,
-    idade: Number(form[2].value),
-    porte: form[3].value,
-    status: "Disponível",
-    imagem: form[4].value || "https://placekitten.com/200/200"
+    id: animais.length+1,
+    nome:this[0].value,
+    especie:this[1].value,
+    idade:parseInt(this[2].value),
+    porte:this[3].value,
+    status:"Disponível",
+    imagem:"https://placeimg.com/200/200/animals"
   };
   animais.push(novo);
-  listarAnimaisFuncionario();
-  listarAnimais();
-  form.reset();
-}
+  carregarTabelaAnimais();
+  aplicarFiltros();
+  this.reset();
+});
 
-// Remover animal
+// ======== Remover Animal ========
 function removerAnimal(id){
-  animais = animais.filter(a => a.id !== id);
-  listarAnimaisFuncionario();
-  listarAnimais();
-}
-
-// Listar histórico de adoções
-function listarHistoricoFuncionario() {
-  const container = document.getElementById("historico-funcionario");
-  container.innerHTML = "";
-  historicoAdocoes.forEach(h => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${h.nome}</td>
-      <td>${h.email}</td>
-      <td>${h.telefone}</td>
-      <td>${h.endereco}</td>
-      <td>${h.animaisAdotados.map(a => a.nome).join(", ")}</td>
-    `;
-    container.appendChild(row);
-  });
-}
-
-// Estatísticas rápidas
-function mostrarEstatisticas() {
-  const disp = animais.filter(a => a.status === "Disponível").length;
-  const adot = animais.filter(a => a.status === "Adotado").length;
-  document.getElementById("estatisticas").innerHTML = `
-    <p>Total disponíveis: ${disp}</p>
-    <p>Total adotados: ${adot}</p>
-  `;
-}
-
-// Animação de coração subindo
-function subirCoracao() {
-  const heart = document.createElement("div");
-  heart.innerText = "💜";
-  heart.style.position = "fixed";
-  heart.style.bottom = "100px";
-  heart.style.right = "90px";
-  heart.style.fontSize = "24px";
-  heart.style.opacity = 1;
-  heart.style.zIndex = 1000;
-  document.body.appendChild(heart);
-
-  let pos = 100;
-  const interval = setInterval(() => {
-    pos += 2;
-    heart.style.bottom = pos + "px";
-    heart.style.opacity -= 0.02;
-    if(pos > 200){
-      clearInterval(interval);
-      heart.remove();
-    }
-  }, 10);
+  animais = animais.filter(a=>a.id!==id);
+  carregarTabelaAnimais();
+  aplicarFiltros();
 }

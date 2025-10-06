@@ -1,18 +1,22 @@
-/* Estilo base */
+/* Fonte principal e corpo */
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
-  background-color: #f8f8f8;
+  background-color: #f9f9f9; /* fundo branco/cinza clarinho */
   color: #333;
 }
 
+/* Cabeçalho */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f5f5f5;
-  padding: 15px 40px;
+  background-color: #fff;
+  padding: 15px 30px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .logo-container {
@@ -27,9 +31,10 @@ header {
   width: 50px;
 }
 
-h1 {
-  color: #b79de8;
+.logo-container h1 {
   font-family: 'Moul', sans-serif;
+  color: #b79de8;
+  margin: 0;
 }
 
 /* Navegação */
@@ -41,10 +46,11 @@ nav button {
   color: white;
   border-radius: 6px;
   cursor: pointer;
+  font-family: 'Poppins', sans-serif;
   font-weight: bold;
-  font-family: 'Moul', sans-serif;
   transition: 0.3s;
 }
+
 nav button:hover {
   background-color: #a06ed1;
 }
@@ -52,7 +58,7 @@ nav button:hover {
 /* Sessões */
 .sessao {
   display: none;
-  padding: 40px;
+  padding: 40px 20px;
   text-align: center;
 }
 
@@ -62,168 +68,218 @@ nav button:hover {
 
 /* Banner inicial */
 .banner {
-  background-color: #fdf9ff;
+  background-color: #fdf0f7;
   border-radius: 12px;
   padding: 60px 20px;
   margin: 0 auto;
   max-width: 800px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
+
 .banner h2 {
+  font-family: 'Moul', sans-serif;
   color: #b79de8;
   font-size: 2em;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
+
 .banner p {
   color: #555;
   font-size: 1.1em;
   line-height: 1.6;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 /* Botões */
 button {
-  font-family: 'Moul', sans-serif;
-  font-size: 1em;
-  font-weight: bold;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-button:hover {
-  opacity: 0.9;
+  font-family: 'Poppins', sans-serif;
 }
 
-/* Pop-up carrinho */
-#carrinho-popup {
-  display: none;
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 280px;
-  background-color: #ffe6f0;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  padding: 15px 20px;
-  font-family: 'Poppins', sans-serif;
-  z-index: 1000;
-}
-#carrinho-popup h3 {
-  margin-top: 0;
-  color: #b79de8;
-}
-#carrinho-popup ul {
-  list-style: none;
-  padding: 0;
-  max-height: 150px;
-  overflow-y: auto;
-}
-#carrinho-popup button {
-  background-color: #b79de8;
+.btn-acao, .card button {
+  background-color: #ff9fbf;
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  margin-top: 10px;
-}
-
-/* Ícone carrinho */
-#icone-carrinho {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  border-radius: 20px;
+  padding: 10px 20px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  transition: transform 0.3s;
-}
-#icone-carrinho:hover {
-  transform: scale(1.1);
+  font-weight: bold;
+  transition: 0.3s;
 }
 
-/* Cards animais */
+.btn-acao:hover, .card button:hover {
+  background-color: #e681a8;
+}
+
+/* Filtros */
+.filtros {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.filtros select {
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
+/* Lista de animais */
 .container-animais {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 20px;
 }
+
 .card {
-  display: inline-block;
-  width: 200px;
-  background-color: #fdf9ff;
-  border-radius: 10px;
+  background-color: #fdf0f7;
+  border-radius: 12px;
   padding: 15px;
-  margin: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  width: 200px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
   text-align: center;
 }
+
 .card img {
   width: 100%;
-  border-radius: 10px;
+  border-radius: 12px;
+  margin-bottom: 10px;
 }
+
 .card h3 {
-  margin-top: 10px;
+  margin: 10px 0 5px 0;
   color: #b79de8;
 }
 
-/* Formulário adotante e funcionário */
+/* Mensagem "não encontrado" */
+.msg-nao-encontrado {
+  color: red;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* Formulários */
 form {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  max-width: 300px;
+  max-width: 350px;
   margin: 0 auto;
 }
+
 form input {
   margin-bottom: 15px;
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  width: 100%;
 }
-form button {
-  padding: 10px;
-  background-color: #b79de8;
+
+/* Portal do funcionário */
+#portal-conteudo.oculto {
+  display: none;
+  padding: 20px;
+}
+
+/* Botão sair */
+#btn-sair {
+  background-color: #ff6b81;
   color: white;
   border: none;
-  border-radius: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
   cursor: pointer;
   font-weight: bold;
-}
-form button:hover {
-  background-color: #a06ed1;
-}
-
-/* Filtros */
-.filtros select {
-  margin: 0 5px;
-  padding: 5px 10px;
-  border-radius: 6px;
+  margin-bottom: 15px;
+  transition: 0.3s;
 }
 
-/* Mensagem final adoção */
-#msg-confirmacao {
-  text-align: center;
-  font-size: 1.3em;
+#btn-sair:hover {
+  background-color: #e0556b;
+}
+
+/* Tabelas portal funcionário */
+#portal-conteudo table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 25px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+#portal-conteudo th, #portal-conteudo td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+#portal-conteudo th {
+  background-color: #b79de8;
+  color: white;
+  font-family: 'Moul', sans-serif;
+  font-size: 1em;
+}
+
+#portal-conteudo tr:nth-child(even) td {
+  background-color: #fdf0f7;
+}
+
+#portal-conteudo tr:nth-child(odd) td {
+  background-color: #f9e6f6;
+}
+
+#portal-conteudo td button {
+  background-color: #ff9fbf;
+  border: none;
+  border-radius: 15px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+#portal-conteudo td button:hover {
+  background-color: #e681a8;
+}
+
+/* Pop-up carrinho */
+#icone-carrinho {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+}
+
+#carrinho-popup {
+  position: fixed;
+  bottom: 100px;
+  right: 30px;
+  width: 300px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  padding: 15px;
+  display: none;
+  z-index: 100;
+}
+
+#carrinho-popup h3 {
+  margin-top: 0;
+  font-family: 'Moul', sans-serif;
   color: #b79de8;
-  margin-top: 20px;
-  font-weight: bold;
-  animation: pulse 1s ease-in-out;
-}
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
 }
 
-/* Oculto */
-.oculto { display: none; }
+#carrinho-list {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-left: 20px;
+  margin-bottom: 15px;
+  text-align: left;
+}
 
-/* Mensagem quando nenhum animal encontrado */
-.msg-nao-encontrado {
-  color: #ff4d6d;
-  font-weight: bold;
-  margin-bottom: 10px;
+#carrinho-popup button {
+  width: 100%;
 }
