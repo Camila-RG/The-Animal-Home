@@ -1,19 +1,18 @@
+/* Estilo base */
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
-  background-color: #f7f7f7;
+  background-color: #f8f8f8;
   color: #333;
 }
 
-/* Cabeçalho */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: #f5f5f5;
-  padding: 15px 30px;
+  padding: 15px 40px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  position: relative;
 }
 
 .logo-container {
@@ -31,13 +30,11 @@ header {
 h1 {
   color: #b79de8;
   font-family: 'Moul', sans-serif;
-  font-size: 1.8em;
-  margin: 0;
 }
 
 /* Navegação */
 nav button {
-  margin-left: 10px;
+  margin-left: 15px;
   padding: 8px 16px;
   border: none;
   background-color: #b79de8;
@@ -45,75 +42,25 @@ nav button {
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
+  font-family: 'Moul', sans-serif;
   transition: 0.3s;
 }
-
 nav button:hover {
   background-color: #a06ed1;
 }
 
-#carrinho-icone {
-  font-size: 24px;
-  cursor: pointer;
-  margin-left: 15px;
-  border-radius: 50%;
-  padding: 5px 10px;
-  background-color: #ff9fbf;
-  color: white;
-}
-
-/* Popup Carrinho */
-#carrinho-popup {
-  display: none;
-  position: fixed;
-  right: 20px;
-  top: 70px;
-  width: 220px;
-  background-color: #fff;
-  border: 2px solid #b79de8;
-  border-radius: 12px;
-  padding: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 100;
-}
-
-#carrinho-popup ul {
-  list-style: none;
-  padding: 0;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-#carrinho-popup button {
-  width: 100%;
-  padding: 8px;
-  border: none;
-  border-radius: 6px;
-  background-color: #b79de8;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-#carrinho-popup button:hover {
-  background-color: #a06ed1;
-}
-
 /* Sessões */
-main {
-  padding: 40px;
-  text-align: center;
-}
-
 .sessao {
   display: none;
+  padding: 40px;
+  text-align: center;
 }
 
 .sessao.ativa {
   display: block;
 }
 
+/* Banner inicial */
 .banner {
   background-color: #fdf9ff;
   border-radius: 12px;
@@ -122,13 +69,11 @@ main {
   max-width: 800px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
-
 .banner h2 {
   color: #b79de8;
   font-size: 2em;
   margin-bottom: 10px;
 }
-
 .banner p {
   color: #555;
   font-size: 1.1em;
@@ -136,88 +81,149 @@ main {
   margin-bottom: 20px;
 }
 
-/* Lista de animais */
-.animais-container {
+/* Botões */
+button {
+  font-family: 'Moul', sans-serif;
+  font-size: 1em;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+button:hover {
+  opacity: 0.9;
+}
+
+/* Pop-up carrinho */
+#carrinho-popup {
+  display: none;
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 280px;
+  background-color: #ffe6f0;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  padding: 15px 20px;
+  font-family: 'Poppins', sans-serif;
+  z-index: 1000;
+}
+#carrinho-popup h3 {
+  margin-top: 0;
+  color: #b79de8;
+}
+#carrinho-popup ul {
+  list-style: none;
+  padding: 0;
+  max-height: 150px;
+  overflow-y: auto;
+}
+#carrinho-popup button {
+  background-color: #b79de8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin-top: 10px;
+}
+
+/* Ícone carrinho */
+#icone-carrinho {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: transform 0.3s;
+}
+#icone-carrinho:hover {
+  transform: scale(1.1);
+}
+
+/* Cards animais */
+.container-animais {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 15px;
-  margin-top: 20px;
 }
-
 .card {
-  width: 180px;
-  background-color: #ffeef4;
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: inline-block;
+  width: 200px;
+  background-color: #fdf9ff;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   text-align: center;
 }
-
 .card img {
   width: 100%;
   border-radius: 10px;
 }
-
 .card h3 {
+  margin-top: 10px;
   color: #b79de8;
-  margin: 10px 0 5px 0;
 }
 
-.card button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  background-color: #ff9fbf;
-  color: white;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 5px;
-}
-
-.card button:hover {
-  background-color: #e681a8;
-}
-
-.filtros select {
-  margin: 0 5px;
-  padding: 6px;
-}
-
-/* Formulários */
+/* Formulário adotante e funcionário */
 form {
   display: flex;
   flex-direction: column;
-  width: 250px;
+  align-items: center;
+  max-width: 300px;
   margin: 0 auto;
 }
-
 form input {
-  margin-bottom: 10px;
-  padding: 8px;
+  margin-bottom: 15px;
+  padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  width: 100%;
 }
-
 form button {
-  padding: 8px;
-  border: none;
-  border-radius: 6px;
+  padding: 10px;
   background-color: #b79de8;
   color: white;
-  font-weight: bold;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: bold;
 }
-
 form button:hover {
   background-color: #a06ed1;
 }
 
-.msg-alerta {
-  color: red;
-  margin-top: 10px;
+/* Filtros */
+.filtros select {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border-radius: 6px;
 }
 
-.oculto {
-  display: none;
+/* Mensagem final adoção */
+#msg-confirmacao {
+  text-align: center;
+  font-size: 1.3em;
+  color: #b79de8;
+  margin-top: 20px;
+  font-weight: bold;
+  animation: pulse 1s ease-in-out;
+}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Oculto */
+.oculto { display: none; }
+
+/* Mensagem quando nenhum animal encontrado */
+.msg-nao-encontrado {
+  color: #ff4d6d;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
