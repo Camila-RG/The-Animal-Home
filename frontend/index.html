@@ -65,8 +65,12 @@
 
   <div id="lista-animais-cards" class="animais-container"></div>
 
+  <!-- Popup do Carrinho com Logo -->
   <div class="carrinho" id="popup-carrinho">
-    <h3>Carrinho de Adoção 🏠</h3>
+    <div style="display:flex; align-items:center; gap:10px; justify-content:center;">
+      <img src="images/logo.png" class="logo-popup" alt="Logo">
+      <h3>Carrinho de Adoção 🏠</h3>
+    </div>
     <ul id="carrinho-list"></ul>
     <button class="btn-acao" onclick="finalizarAdocao()">Finalizar Adoção</button>
   </div>

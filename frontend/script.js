@@ -21,7 +21,7 @@ let carrinho = [];
 const funcEmail = "funcionario@email";
 const funcSenha = "bebeto321";
 
-// Adotar animação de coração
+// Criar animação coração
 function criarCoracao(x, y) {
   const heart = document.createElement("div");
   heart.textContent = "💜";
@@ -104,7 +104,6 @@ function finalizarAdocao() {
 // Enviar formulário de adoção
 document.getElementById("adocao-form").addEventListener("submit", function(e){
   e.preventDefault();
-  // Atualiza status dos animais
   carrinho.forEach(a => a.status = "Adotado");
   carrinho = [];
   atualizarLista();
@@ -116,9 +115,7 @@ document.getElementById("adocao-form").addEventListener("submit", function(e){
 });
 
 // Aplicar filtros
-function aplicarFiltros() {
-  atualizarLista();
-}
+function aplicarFiltros() { atualizarLista(); }
 
 // Portal do funcionário - login
 document.getElementById("form-login-func").addEventListener("submit", function(e){
@@ -196,3 +193,4 @@ function atualizarHistorico(){
 
 // Inicializar lista
 atualizarLista();
+  
