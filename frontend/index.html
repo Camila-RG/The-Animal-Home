@@ -3,25 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Animal Home</title>
-
-  <!-- Fontes -->
   <link href="https://fonts.googleapis.com/css2?family=Moul&family=Poppins&display=swap" rel="stylesheet">
-
-  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
+  <title>The Animal Home</title>
 </head>
 <body>
   <header>
-    <div class="logo-container">
+    <div class="logo-container" onclick="mostrarSessao('inicio')">
       <img src="images/logo.png" alt="Logo The Animal Home" class="logo">
       <h1>The Animal Home</h1>
     </div>
     <nav>
-      <button onclick="mostrarSessao('inicio')">Início</button>
-      <button onclick="mostrarSessao('login')">Login</button>
       <button onclick="mostrarSessao('animais')">Ver Animais</button>
-      <button onclick="mostrarSessao('disponiveis')">Disponíveis</button>
     </nav>
   </header>
 
@@ -30,62 +23,78 @@
     <section id="inicio" class="sessao ativa">
       <div class="banner">
         <h2>Adotar é um ato de amor 💜</h2>
-        <p>O The Animal Home conecta corações. Nossa missão é dar uma nova chance a cães e gatos, oferecendo um lar cheio de carinho e cuidado.</p>
-        <p>Cada adoção transforma duas vidas: a do animal e a de quem o acolhe. Venha fazer parte dessa família de amor e esperança!</p>
-        <button class="btn-acao" onclick="mostrarSessao('animais')">Conheça nossos animais</button>
+        <p>O The Animal Home conecta corações. Nossa missão é dar uma nova chance a cães, gatos, e outros animais, oferecendo um lar cheio de carinho e cuidado.</p>
+        <p>Cada adoção transforma vidas: a do animal e a de quem o acolhe.</p>
       </div>
-    </section>
-
-    <!-- Login -->
-    <section id="login" class="sessao">
-      <h2>Login</h2>
-      <form id="formLogin">
-        <input type="text" placeholder="Usuário" required>
-        <input type="password" placeholder="Senha" required>
-        <button type="submit">Entrar</button>
-      </form>
     </section>
 
     <!-- Lista de animais -->
     <section id="animais" class="sessao">
-      <h2>Lista de Animais</h2>
-
-      <!-- Filtros -->
       <div class="filtros">
-        <select id="filtro-especie">
-          <option value="">Todas as espécies</option>
+        <label>Espécie:</label>
+        <select id="select-especie" onchange="listarAnimais()">
+          <option value="">Todas</option>
           <option value="Gato">Gato</option>
           <option value="Cachorro">Cachorro</option>
+          <option value="Jacaré">Jacaré</option>
+          <option value="Galinha">Galinha</option>
+          <option value="Coelho">Coelho</option>
         </select>
 
-        <select id="filtro-porte">
-          <option value="">Todos os portes</option>
+        <label>Idade:</label>
+        <select id="select-idade" onchange="listarAnimais()">
+          <option value="">Todas</option>
+          <option value="0-1">0-1 anos</option>
+          <option value="2-4">2-4 anos</option>
+          <option value="5+">5+ anos</option>
+        </select>
+
+        <label>Porte:</label>
+        <select id="select-porte" onchange="listarAnimais()">
+          <option value="">Todos</option>
           <option value="Pequeno">Pequeno</option>
           <option value="Médio">Médio</option>
           <option value="Grande">Grande</option>
         </select>
 
-        <select id="filtro-idade">
-          <option value="">Todas as idades</option>
-          <option value="0-1">0-1 ano</option>
-          <option value="2-4">2-4 anos</option>
-          <option value="5+">5 anos ou mais</option>
+        <label>Sexo:</label>
+        <select id="select-sexo" onchange="listarAnimais()">
+          <option value="">Todos</option>
+          <option value="Macho">Macho</option>
+          <option value="Fêmea">Fêmea</option>
         </select>
-
-        <button onclick="aplicarFiltros()">Filtrar</button>
       </div>
 
-      <div id="lista-animais"></div>
+      <div id="lista-animais" class="area-animais"></div>
+      <p id="mensagem-vazia"></p>
     </section>
 
-    <!-- Animais disponíveis -->
-    <section id="disponiveis" class="sessao">
-      <h2>Animais Disponíveis para Adoção</h2>
-      <div id="animais-disponiveis"></div>
+    <!-- Página de cadastro do adotante -->
+    <section id="cadastroAdotante" class="sessao">
+      <h2>Finalize sua adoção</h2>
+      <form id="formAdotante">
+        <input type="text" placeholder="Nome completo" id="nomeAdotante" required>
+        <input type="email" placeholder="E-mail" id="emailAdotante" required>
+        <input type="tel" placeholder="Telefone" id="telefoneAdotante" required>
+        <input type="text" placeholder="Endereço" id="enderecoAdotante" required>
+        <button type="submit">Finalizar Adoção</button>
+      </form>
+      <p id="mensagem-finalizacao"></p>
     </section>
   </main>
 
-  <!-- JS -->
+  <!-- Carrinho / casinha -->
+  <div id="carrinho" onclick="togglePopup()">
+    <img src="images/logo.png" alt="Carrinho de adoção">
+    <div id="contador">0</div>
+  </div>
+
+  <div id="popup-carrinho">
+    <h4>Animais selecionados</h4>
+    <ul></ul>
+    <button onclick="prosseguirCadastro()">Finalizar Adoção</button>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>

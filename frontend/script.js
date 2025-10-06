@@ -1,75 +1,97 @@
+let animais = [
+  {id:1,nome:"Luna",especie:"Gato",idade:1,porte:"Pequeno",status:"Disponível",imagem:"https://placekitten.com/200/200"},
+  {id:2,nome:"Thor",especie:"Cachorro",idade:3,porte:"Médio",status:"Disponível",imagem:"https://placedog.net/200/200"},
+  {id:3,nome:"Mel",especie:"Jacaré",idade:2,porte:"Grande",status:"Disponível",imagem:"https://placekitten.com/201/200"},
+  {id:4,nome:"Galinha",especie:"Galinha",idade:1,porte:"Pequeno",status:"Disponível",imagem:"https://placekitten.com/202/200"}
+];
+
+let carrinho = [];
+
 function mostrarSessao(id) {
   document.querySelectorAll(".sessao").forEach(sec => sec.classList.remove("ativa"));
   document.getElementById(id).classList.add("ativa");
 }
 
-// Lista inicial de animais
-const animais = [
-  { nome: "Luna", especie: "Gato", idade: 2, porte: "Pequeno", status: "Disponível", imagem: "https://placekitten.com/200/200" },
-  { nome: "Thor", especie: "Cachorro", idade: 4, porte: "Médio", status: "Adotado", imagem: "https://placedog.net/200/200" },
-  { nome: "Mel", especie: "Cachorro", idade: 1, porte: "Pequeno", status: "Disponível", imagem: "https://placedog.net/201/200" }
-];
-
-// Listar todos os animais
+// --- LISTAR ANIMAIS ---
 function listarAnimais() {
+  const especie = document.getElementById("select-especie").value;
+  const idade = document.getElementById("select-idade").value;
+  const porte = document.getElementById("select-porte").value;
   const lista = document.getElementById("lista-animais");
-  lista.innerHTML = animais.map(a => `
-    <div class="card">
-      <img src="${a.imagem}" alt="${a.nome}">
-      <h3>${a.nome}</h3>
-      <p>${a.especie} - ${a.idade} anos</p>
-      <p>Porte: ${a.porte}</p>
-      <p>Status: <b>${a.status}</b></p>
-    </div>
-  `).join('');
-}
+  const mensagemVazia = document.getElementById("mensagem-vazia");
 
-// Listar apenas disponíveis
-function listarDisponiveis() {
-  const disponiveis = animais.filter(a => a.status === "Disponível");
-  const lista = document.getElementById("animais-disponiveis");
-  lista.innerHTML = disponiveis.map(a => `
-    <div class="card">
-      <img src="${a.imagem}" alt="${a.nome}">
-      <h3>${a.nome}</h3>
-      <p>${a.especie} - ${a.idade} anos</p>
-      <p>Porte: ${a.porte}</p>
-      <button>Adotar</button>
-    </div>
-  `).join('');
-}
+  let filtrados = animais.filter(a => 
+    (!especie || a.especie === especie) &&
+    (!porte || a.porte === porte) &&
+    (!idade || (idade==="0-1"?a.idade<=1: idade==="2-4"?a.idade>=2&&a.idade<=4:a.idade>=5))
+  );
 
-// Aplicar filtros
-function aplicarFiltros() {
-  const especie = document.getElementById('filtro-especie').value;
-  const porte = document.getElementById('filtro-porte').value;
-  const idade = document.getElementById('filtro-idade').value;
-
-  let filtrados = animais.filter(a => a.status === "Disponível");
-
-  if (especie) filtrados = filtrados.filter(a => a.especie === especie);
-  if (porte) filtrados = filtrados.filter(a => a.porte === porte);
-
-  if (idade) {
-    filtrados = filtrados.filter(a => {
-      if (idade === "0-1") return a.idade <= 1;
-      if (idade === "2-4") return a.idade >= 2 && a.idade <= 4;
-      if (idade === "5+") return a.idade >= 5;
-    });
+  if(filtrados.length===0){
+    lista.innerHTML = "";
+    mensagemVazia.innerText = "Animal não consta no banco de dados";
+    return;
   }
 
-  const lista = document.getElementById("lista-animais");
-  lista.innerHTML = filtrados.map(a => `
+  mensagemVazia.innerText = "";
+  lista.innerHTML = filtrados.map(a=>`
     <div class="card">
       <img src="${a.imagem}" alt="${a.nome}">
       <h3>${a.nome}</h3>
       <p>${a.especie} - ${a.idade} anos</p>
       <p>Porte: ${a.porte}</p>
-      <button>Adotar</button>
+      <button onclick="adotarAnimal(${a.id})">Adotar 💜</button>
     </div>
   `).join('');
 }
 
-// Inicializar listas
+// --- CARRINHO ---
+function adotarAnimal(id){
+  const animal = animais.find(a=>a.id===id);
+  if(!carrinho.includes(animal)){
+    carrinho.push(animal);
+    atualizarContador();
+    criarCoracao();
+  }
+}
+
+function atualizarContador(){
+  document.getElementById("contador").innerText = carrinho.length;
+}
+
+function togglePopup(){
+  const popup = document.getElementById("popup-carrinho");
+  popup.style.display = popup.style.display==="block"?"none":"block";
+  atualizarPopup();
+}
+
+function atualizarPopup(){
+  const ul = document.querySelector("#popup-carrinho ul");
+  ul.innerHTML = carrinho.map(a=>`<li>${a.nome}</li>`).join('');
+}
+
+function prosseguirCadastro(){
+  mostrarSessao('cadastroAdotante');
+  document.getElementById("popup-carrinho").style.display="none";
+}
+
+// --- FINALIZAR ADOTANTE ---
+document.getElementById("formAdotante").addEventListener("submit", function(e){
+  e.preventDefault();
+  carrinho=[];
+  atualizarContador();
+  document.getElementById("lista-animais").innerHTML="";
+  document.getElementById("mensagem-finalizacao").innerText = "Entraremos em contato por e-mail para concluir a adoção 💜";
+});
+
+// --- CORAÇÃO SUBINDO ---
+function criarCoracao(){
+  const heart = document.createElement("div");
+  heart.classList.add("coracao");
+  heart.innerText = "💜";
+  heart.style.left = Math.random()*window.innerWidth+"px";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),1000);
+}
+
+// Inicializa a lista
 listarAnimais();
-listarDisponiveis();
