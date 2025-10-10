@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS Animal (
   especie VARCHAR(100) NOT NULL,            -- Espécie (ex: cachorro, gato)
   idade INT NOT NULL,                       -- Idade em anos
   sexo CHAR(1) NOT NULL,                    -- Sexo: M ou F
+  porte VARCHAR(20),                        -- Porte do animal (Pequeno, Médio, Grande)
   status VARCHAR(20) DEFAULT 'Disponível'   -- Situação do animal (ex: disponível, adotado)
 );
 
@@ -41,3 +42,5 @@ INSERT INTO Animal (nome, especie, idade, sexo, status) VALUES
 INSERT INTO Adotante (nome, email, telefone, endereco) VALUES
 ('João Silva', 'joao@email.com', '11999999999', 'Rua A, 123'),
 ('Maria Santos', 'maria@email.com', '11888888888', 'Rua B, 456');
+
+ALTER TABLE Animal ADD COLUMN porte VARCHAR(20);
