@@ -99,7 +99,7 @@
 
   <div id="portal-conteudo" class="oculto">
     <button class="btn-acao" onclick="sairFuncionario()">Sair da Conta</button>
-
+    
     <h3>Cadastrar Novo Animal</h3>
     <form id="form-cadastro-animal">
       <input type="text" placeholder="Nome do animal" required>
@@ -111,6 +111,13 @@
         <option value="Galinha">Galinha</option>
       </select>
       <input type="number" placeholder="Idade" required>
+      
+      <select required>
+        <option value="">Selecione o sexo</option>
+        <option value="M">Macho</option>
+        <option value="F">Fêmea</option>
+      </select>
+
       <select required>
         <option value="">Selecione o porte</option>
         <option value="Pequeno">Pequeno</option>
@@ -119,7 +126,6 @@
       </select>
       <button type="submit" class="btn-acao">Cadastrar Animal</button>
     </form>
-
     <h3>Animais Cadastrados</h3>
     <table id="tabela-animais">
       <thead>
