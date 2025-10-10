@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS Animal (
   idade INT NOT NULL,                       -- Idade em anos
   sexo CHAR(1) NOT NULL,                    -- Sexo: M ou F
   porte VARCHAR(20),                        -- Porte do animal (Pequeno, Médio, Grande)
+  imagem_url VARCHAR(255),                  -- URL da imagem do animal
   data_chegada DATE,                        -- Data de chegada do animal no abrigo
   status VARCHAR(20) DEFAULT 'Disponível'   -- Situação do animal (ex: disponível, adotado)
 );
@@ -32,12 +33,6 @@ CREATE TABLE IF NOT EXISTS Adocao (
   FOREIGN KEY (id_animal) REFERENCES Animal(id_animal) ON DELETE CASCADE,    -- Relaciona com Animal
   FOREIGN KEY (id_adotante) REFERENCES Adotante(id_adotante) ON DELETE CASCADE -- Relaciona com Adotante
 );
-
--- Exemplos de animais cadastrados
-INSERT INTO Animal (nome, especie, idade, sexo, status) VALUES
-('Rex', 'Cachorro', 3, 'M', 'Disponível'),
-('Mia', 'Gato', 2, 'F', 'Disponível'),
-('Bob', 'Cachorro', 5, 'M', 'Disponível');
 
 -- Exemplos de adotantes cadastrados
 INSERT INTO Adotante (nome, email, telefone, endereco) VALUES
