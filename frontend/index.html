@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Animal Home</title>
-  
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="icon" href="images/logo.png">
@@ -23,20 +22,16 @@
 </header>
 
 <main>
-
   <section id="inicio" class="sessao ativa">
     <div class="banner">
       <h2>Adotar é um ato de amor 💜</h2>
-      <p>O The Animal Home conecta corações. Nossa missão é dar uma nova chance a cães, gatos e outros animais,
-         oferecendo um lar cheio de carinho e cuidado.</p>
-      <p>Cada adoção transforma duas vidas: a do animal e a de quem o acolhe.
-         Venha fazer parte dessa família de amor e esperança!</p>
+      <p>O The Animal Home conecta corações. Nossa missão é dar uma nova chance a cães, gatos e outros animais, oferecendo um lar cheio de carinho e cuidado.</p>
+      <p>Cada adoção transforma duas vidas: a do animal e a de quem o acolhe. Venha fazer parte dessa família de amor e esperança!</p>
     </div>
   </section>
 
   <section id="lista-animais" class="sessao">
     <h2>Lista de Animais Disponíveis</h2>
-
     <div class="filtros">
       <select id="filtro-especie">
         <option value="">Todas as espécies</option>
@@ -61,9 +56,7 @@
       </select>
       <button class="btn-acao" onclick="aplicarFiltros()">Filtrar</button>
     </div>
-
     <div id="lista-animais-cards" class="animais-container"></div>
-
     <div class="carrinho" id="popup-carrinho">
       <div style="display:flex; align-items:center; gap:10px; justify-content:center;">
         <img src="images/logo.png" class="logo-popup" alt="Logo">
@@ -92,10 +85,8 @@
       <input type="password" placeholder="Senha" required>
       <button type="submit" class="btn-acao">Entrar</button>
     </form>
-
     <div id="portal-conteudo" class="oculto">
       <button class="btn-acao" onclick="sairFuncionario()">Sair da Conta</button>
-      
       <h3>Cadastrar Novo Animal</h3>
       <form id="form-cadastro-animal">
         <input type="text" id="animal-nome" placeholder="Nome do animal" required>
@@ -121,7 +112,6 @@
         <input type="text" id="animal-imagem-url" placeholder="Caminho da imagem (ex: images/nome.png)" required>
         <button type="submit" class="btn-acao">Cadastrar Animal</button>
       </form>
-      
       <h3>Animais Cadastrados</h3>
       <table id="tabela-animais">
         <thead>
@@ -136,8 +126,8 @@
         </thead>
         <tbody></tbody>
       </table>
-
       <h3>Histórico de Adoções</h3>
+      <button class="btn-acao" onclick="limparHistorico()">Limpar Histórico</button>
       <table id="tabela-adocoes">
         <thead>
           <tr>
@@ -150,7 +140,6 @@
       </table>
     </div>
   </section>
-
 </main>
 
 <script src="script.js"></script>

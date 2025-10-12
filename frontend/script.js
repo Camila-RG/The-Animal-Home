@@ -1,33 +1,22 @@
-// Define a URL base da sua API backend para centralizar a referência
+// Define a URL base da sua API backend
 const API_URL = 'http://localhost:3000';
 
-/**
- * @description Altera a visibilidade das seções da página (Início, Ver Animais, etc.).
- * @param {string} id - O ID da seção que deve ser exibida.
- */
+// Função para mostrar a seção correta da página
 function mostrarSessao(id) {
-  // Esconde todas as seções
   document.querySelectorAll(".sessao").forEach(sec => sec.classList.remove("ativa"));
-  // Exibe apenas a seção desejada
   document.getElementById(id).classList.add("ativa");
-  // Se a seção for a de lista de animais, atualiza os dados
   if (id === 'lista-animais') {
     atualizarLista();
   }
 }
 
-// Array para armazenar os animais selecionados para adoção no frontend
 let carrinho = [];
 
-// Dados de login para o portal do funcionário
+// Dados de login do funcionário
 const funcEmail = "funcionario@email";
 const funcSenha = "bebeto321";
 
-/**
- * @description Cria uma animação de um coração que flutua na tela a partir de um ponto.
- * @param {number} x - A coordenada X inicial do coração.
- * @param {number} y - A coordenada Y inicial do coração.
- */
+// Função para criar animação de coração
 function criarCoracao(x, y) {
   const heart = document.createElement("div");
   heart.textContent = "💜";
@@ -50,20 +39,15 @@ function criarCoracao(x, y) {
   }, 10);
 }
 
-/**
- * @description Busca os animais disponíveis na API e os exibe na tela.
- * Também aplica os filtros selecionados pelo usuário.
- */
+// Atualiza a lista de animais na tela principal
 async function atualizarLista() {
   const lista = document.getElementById("lista-animais-cards");
   lista.innerHTML = "<p>Carregando animais... 🐾</p>";
 
-  // Pega os valores dos filtros
   const especie = document.getElementById("filtro-especie").value;
   const idade = document.getElementById("filtro-idade").value;
   const porte = document.getElementById("filtro-porte").value;
 
-  // Monta a URL com os parâmetros de filtro para a API
   const params = new URLSearchParams({ status: 'Disponível' });
   if (especie) params.append('especie', especie);
   if (porte) params.append('porte', porte);
@@ -77,19 +61,16 @@ async function atualizarLista() {
   }
   
   try {
-    // Faz a requisição para a API
     const response = await fetch(`${API_URL}/animais?${params.toString()}`);
     if (!response.ok) throw new Error('Falha ao buscar os animais.');
     
     const animais = await response.json();
 
-    // Se não houver animais, exibe uma mensagem
     if (animais.length === 0) {
       lista.innerHTML = "<p>Nenhum animal encontrado com esses filtros. 🐾</p>";
       return;
     }
 
-    // Cria os cards para cada animal e os insere na página
     lista.innerHTML = animais.map(a => `
       <div class="card">
         <img src="${a.imagem_url || 'images/logo.png'}" alt="${a.nome}">
@@ -105,41 +86,30 @@ async function atualizarLista() {
   }
 }
 
-/**
- * @description Adiciona um animal ao carrinho de adoção local.
- * @param {object} animal - O objeto do animal a ser adicionado.
- * @param {Event} e - O evento de clique para a animação do coração.
- */
+// Adiciona um animal ao carrinho
 function adicionarCarrinho(animal, e) {
-  // Verifica se o animal já está no carrinho para evitar duplicatas
   if (animal && !carrinho.some(item => item.id_animal === animal.id_animal)) {
     carrinho.push(animal);
-    atualizarCarrinho(); // Atualiza a exibição do carrinho
-    criarCoracao(e.clientX, e.clientY); // Cria a animação
+    atualizarCarrinho();
+    criarCoracao(e.clientX, e.clientY);
   } else {
     alert(`${animal.nome} já está no seu carrinho de adoção!`);
   }
 }
 
-/**
- * @description Atualiza a interface do pop-up do carrinho com os animais selecionados.
- */
+// Atualiza o pop-up do carrinho
 function atualizarCarrinho() {
   const popup = document.getElementById("popup-carrinho");
   const lista = document.getElementById("carrinho-list");
-  // Se o carrinho estiver vazio, esconde o pop-up
   if (carrinho.length === 0) {
     popup.style.display = "none";
     return;
   }
-  // Preenche a lista do carrinho e o exibe
   lista.innerHTML = carrinho.map(a => `<li>${a.nome}</li>`).join('');
   popup.style.display = "block";
 }
 
-/**
- * @description Leva o usuário para a tela do formulário de adoção.
- */
+// Leva para o formulário de adoção
 function finalizarAdocao() {
   if (carrinho.length === 0) {
     alert("Adicione ao menos um animal ao carrinho.");
@@ -148,9 +118,9 @@ function finalizarAdocao() {
   mostrarSessao('form-adocao');
 }
 
-// Evento que escuta o envio do formulário de adoção
+// Envia o formulário de adoção
 document.getElementById("adocao-form").addEventListener("submit", async function (e) {
-  e.preventDefault(); // Impede o recarregamento da página
+  e.preventDefault();
   const form = this;
   const nomeAdotante = form.querySelector('input[type="text"]').value;
   const emailAdotante = form.querySelector('input[type="email"]').value;
@@ -158,7 +128,6 @@ document.getElementById("adocao-form").addEventListener("submit", async function
   const mensagem = document.getElementById("mensagem-final");
 
   try {
-    // 1. Cadastra o novo adotante na API
     const resAdotante = await fetch(`${API_URL}/adotantes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -167,7 +136,6 @@ document.getElementById("adocao-form").addEventListener("submit", async function
     if (!resAdotante.ok) throw new Error('Falha ao cadastrar adotante.');
     const novoAdotante = await resAdotante.json();
     
-    // 2. Registra a adoção para cada animal no carrinho
     for (const animal of carrinho) {
       await fetch(`${API_URL}/adocoes`, {
         method: 'POST',
@@ -176,7 +144,6 @@ document.getElementById("adocao-form").addEventListener("submit", async function
       });
     }
 
-    // 3. Limpa os dados e exibe mensagem de sucesso
     carrinho = [];
     atualizarCarrinho();
     mensagem.innerHTML = "💖 Obrigado! Entraremos em contato para finalizar o processo de adoção!";
@@ -188,26 +155,22 @@ document.getElementById("adocao-form").addEventListener("submit", async function
   }
 });
 
-/**
- * @description Função chamada pelo botão "Filtrar" para recarregar a lista de animais.
- */
+// Aplica os filtros
 function aplicarFiltros() {
   atualizarLista();
 }
 
 // --- Funções do Portal do Funcionário ---
 
-// Evento que escuta o envio do formulário de login
+// Login do funcionário
 document.getElementById("form-login-func").addEventListener("submit", function (e) {
   e.preventDefault();
   const email = this.querySelector('input[type="email"]').value;
   const senha = this.querySelector('input[type="password"]').value;
   
-  // Verifica se as credenciais estão corretas
   if (email === funcEmail && senha === funcSenha) {
     document.getElementById("form-login-func").classList.add("oculto");
     document.getElementById("portal-conteudo").classList.remove("oculto");
-    // Carrega as tabelas de animais e histórico
     atualizarTabelaAnimais();
     atualizarHistorico();
   } else {
@@ -215,11 +178,10 @@ document.getElementById("form-login-func").addEventListener("submit", function (
   }
 });
 
-// Evento que escuta o envio do formulário de cadastro de um novo animal
+// Cadastro de novo animal
 document.getElementById("form-cadastro-animal").addEventListener("submit", async function (e) {
   e.preventDefault();
   
-  // Captura os dados do formulário usando os IDs
   const novoAnimal = {
     nome: document.getElementById("animal-nome").value,
     especie: document.getElementById("animal-especie").value,
@@ -231,7 +193,6 @@ document.getElementById("form-cadastro-animal").addEventListener("submit", async
   };
 
   try {
-    // Envia os dados para a API
     const response = await fetch(`${API_URL}/animais`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -243,17 +204,15 @@ document.getElementById("form-cadastro-animal").addEventListener("submit", async
     }
 
     alert('Animal cadastrado com sucesso!');
-    atualizarTabelaAnimais(); // Atualiza a tabela de animais
-    this.reset(); // Limpa o formulário
+    atualizarTabelaAnimais();
+    this.reset();
   } catch (error) {
     console.error("Erro no cadastro:", error);
     alert(`Falha ao cadastrar animal. Detalhe: ${error.message}`);
   }
 });
 
-/**
- * @description Busca todos os animais cadastrados e os exibe na tabela do funcionário.
- */
+// Atualiza a tabela de animais no portal
 async function atualizarTabelaAnimais() {
   const tbody = document.querySelector("#tabela-animais tbody");
   tbody.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>';
@@ -277,10 +236,7 @@ async function atualizarTabelaAnimais() {
   }
 }
 
-/**
- * @description Remove um animal do sistema através da API.
- * @param {number} id_animal - O ID do animal a ser removido.
- */
+// Remove um animal
 async function removerAnimal(id_animal) {
   if (!confirm('Tem certeza que deseja remover este animal do sistema?')) return;
 
@@ -291,25 +247,21 @@ async function removerAnimal(id_animal) {
     if (!response.ok) throw new Error('Falha ao remover.');
 
     alert('Animal removido com sucesso!');
-    atualizarTabelaAnimais(); // Atualiza a tabela após a remoção
+    atualizarTabelaAnimais();
   } catch (error) {
     console.error("Erro ao remover:", error);
     alert('Não foi possível remover o animal.');
   }
 }
 
-/**
- * @description Realiza o logout do funcionário, escondendo o portal e mostrando o login.
- */
+// Logout do funcionário
 function sairFuncionario() {
   document.getElementById("portal-conteudo").classList.add("oculto");
   document.getElementById("form-login-func").classList.remove("oculto");
   document.getElementById("form-login-func").reset();
 }
 
-/**
- * @description Busca o histórico de adoções na API e o exibe na tabela do funcionário.
- */
+// Atualiza o histórico de adoções
 async function atualizarHistorico() {
   const tbody = document.querySelector("#tabela-adocoes tbody");
   tbody.innerHTML = '<tr><td colspan="3">Carregando...</td></tr>';
@@ -336,8 +288,32 @@ async function atualizarHistorico() {
   }
 }
 
-// Evento que executa quando o conteúdo da página é totalmente carregado
+// NOVA FUNÇÃO PARA LIMPAR O HISTÓRICO
+async function limparHistorico() {
+  if (!confirm('Tem certeza que deseja apagar TODO o histórico de adoções? Esta ação não pode ser desfeita.')) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/adocoes/historico/limpar`, {
+      method: 'DELETE'
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao limpar o histórico.');
+    }
+
+    const resultado = await response.json();
+    alert(resultado.mensagem);
+    atualizarHistorico();
+  
+  } catch (error) {
+    console.error("Erro ao limpar histórico:", error);
+    alert('Não foi possível limpar o histórico de adoções.');
+  }
+}
+
+// Inicializa a página
 document.addEventListener('DOMContentLoaded', () => {
-    // Exibe a seção inicial por padrão
     mostrarSessao('inicio');
 });

@@ -105,21 +105,19 @@ router.get('/:id', async (req, res) => {
 // Cadastra um novo animal no sistema
 router.post('/', async (req, res) => {
   try {
-    // Adiciona imagem_url à desestruturação
-    const { nome, especie, idade, sexo, status, porte, data_chegada, imagem_url } = req.body;
+    const { nome, especie, idade, sexo, status, porte, data_chegada } = req.body;
 
     // Validação dos campos obrigatórios
     if (!nome || !especie || !idade || !sexo) {
-      return res.status(400).json({
-        erro: 'Campos obrigatórios: nome, especie, idade, sexo'
+      return res.status(400).json({ 
+        erro: 'Campos obrigatórios: nome, especie, idade, sexo' 
       });
     }
 
-    // Atualiza a query para incluir a nova coluna
+    // Insere o animal na base de dados
     const [resultado] = await db.query(
-      'INSERT INTO Animal (nome, especie, porte, idade, sexo, status, data_chegada, imagem_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      // Adiciona a imagem_url aos parâmetros
-      [nome, especie, porte || null, idade, sexo, status || 'Disponível', data_chegada || new Date(), imagem_url || null]
+      'INSERT INTO Animal (nome, especie, porte, idade, sexo, status, data_chegada) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [nome, especie, porte || null, idade, sexo, status || 'Disponível', data_chegada || new Date()]
     );
 
     res.status(201).json({

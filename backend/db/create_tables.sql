@@ -2,7 +2,7 @@
 CREATE DATABASE IF NOT EXISTS TheAnimalHome;
 USE TheAnimalHome;
 
--- Tabela principal para cadastro dos animais
+-- Tabela principal para cadastro dos animais (COM A COLUNA imagem_url ADICIONADA)
 CREATE TABLE IF NOT EXISTS Animal (
   id_animal INT PRIMARY KEY AUTO_INCREMENT, -- Identificador único do animal
   nome VARCHAR(100) NOT NULL,               -- Nome do animal
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS Animal (
   idade INT NOT NULL,                       -- Idade em anos
   sexo CHAR(1) NOT NULL,                    -- Sexo: M ou F
   porte VARCHAR(20),                        -- Porte do animal (Pequeno, Médio, Grande)
-  imagem_url VARCHAR(255),                  -- URL da imagem do animal
+  imagem_url VARCHAR(255),                  -- URL da imagem do animal (CORREÇÃO APLICADA AQUI)
   data_chegada DATE,                        -- Data de chegada do animal no abrigo
   status VARCHAR(20) DEFAULT 'Disponível'   -- Situação do animal (ex: disponível, adotado)
 );
@@ -34,7 +34,4 @@ CREATE TABLE IF NOT EXISTS Adocao (
   FOREIGN KEY (id_adotante) REFERENCES Adotante(id_adotante) ON DELETE CASCADE -- Relaciona com Adotante
 );
 
--- Exemplos de adotantes cadastrados
-INSERT INTO Adotante (nome, email, telefone, endereco) VALUES
-('João Silva', 'joao@email.com', '11999999999', 'Rua A, 123'),
-('Maria Santos', 'maria@email.com', '11888888888', 'Rua B, 456');
+ALTER TABLE Animal ADD COLUMN imagem_url VARCHAR(255) NULL;
