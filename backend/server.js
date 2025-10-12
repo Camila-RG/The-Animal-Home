@@ -8,16 +8,24 @@ const animaisRoutes = require('./routes/animais');
 const adotantesRoutes = require('./routes/adotantes');
 const adocoesRoutes = require('./routes/adocoes');
 const estatisticasRoutes = require('./routes/estatisticas');
+// IMPORTAÇÃO DA NOVA ROTA DE CONSULTAS
+const consultasRoutes = require('./routes/consultas');
 
 // Inicializa o app Express
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configura os middlewares globais
-app.use(cors()); // Permite requisições de outros domínios
-app.use(express.json()); // Permite receber JSON no corpo das requisições
+// Configura o CORS
+const corsOptions = {
+  origin: 'http://127.0.0.1:5500',
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 
-// Rota raiz para teste rápido da API
+// Middlewares globais
+app.use(express.json());
+
+// Rota raiz
 app.get('/', (req, res) => {
   res.json({ 
     mensagem: 'API The Animal Home está funcionando!',
@@ -25,18 +33,21 @@ app.get('/', (req, res) => {
       animais: '/animais',
       adotantes: '/adotantes',
       adocoes: '/adocoes',
-      estatisticas: '/estatisticas'
+      estatisticas: '/estatisticas',
+      consultas: '/consultas/:id'
     }
   });
 });
 
-// Registra as rotas principais da aplicação
+// Registra as rotas principais
 app.use('/animais', animaisRoutes);
 app.use('/adotantes', adotantesRoutes);
 app.use('/adocoes', adocoesRoutes);
 app.use('/estatisticas', estatisticasRoutes);
+// REGISTRO DA NOVA ROTA DE CONSULTAS
+app.use('/consultas', consultasRoutes);
 
-// Inicia o servidor na porta definida
+// Inicia o servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
   console.log(`📍 Acesse: http://localhost:${PORT}`);
