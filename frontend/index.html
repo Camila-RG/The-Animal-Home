@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Animal Home</title>
-<link rel="stylesheet" href="style.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<link rel="icon" href="images/logo.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Animal Home</title>
+  
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="images/logo.png">
 </head>
 <body>
 
@@ -23,137 +24,132 @@
 
 <main>
 
-<!-- Página inicial -->
-<section id="inicio" class="sessao ativa">
-  <div class="banner">
-    <h2>Adotar é um ato de amor 💜</h2>
-    <p>O The Animal Home conecta corações. Nossa missão é dar uma nova chance a cães, gatos e outros animais,
-       oferecendo um lar cheio de carinho e cuidado.</p>
-    <p>Cada adoção transforma duas vidas: a do animal e a de quem o acolhe.
-       Venha fazer parte dessa família de amor e esperança!</p>
-  </div>
-</section>
-
-<!-- Lista de animais -->
-<section id="lista-animais" class="sessao">
-  <h2>Lista de Animais Disponíveis</h2>
-
-  <div class="filtros">
-    <select id="filtro-especie">
-      <option value="">Todas as espécies</option>
-      <option value="Gato">Gato</option>
-      <option value="Cachorro">Cachorro</option>
-      <option value="Jacaré">Jacaré</option>
-      <option value="Galinha">Galinha</option>
-    </select>
-    <select id="filtro-idade">
-      <option value="">Todas as idades</option>
-      <option value="1">1 ano</option>
-      <option value="2">2 anos</option>
-      <option value="3">3 anos</option>
-      <option value="4">4 anos</option>
-      <option value="5+">5 anos ou mais</option>
-    </select>
-    <select id="filtro-porte">
-      <option value="">Todos os portes</option>
-      <option value="Pequeno">Pequeno</option>
-      <option value="Médio">Médio</option>
-      <option value="Grande">Grande</option>
-    </select>
-    <button class="btn-acao" onclick="aplicarFiltros()">Filtrar</button>
-  </div>
-
-  <div id="lista-animais-cards" class="animais-container"></div>
-
-  <!-- Popup do Carrinho com Logo -->
-  <div class="carrinho" id="popup-carrinho">
-    <div style="display:flex; align-items:center; gap:10px; justify-content:center;">
-      <img src="images/logo.png" class="logo-popup" alt="Logo">
-      <h3>Carrinho de Adoção 🏠</h3>
+  <section id="inicio" class="sessao ativa">
+    <div class="banner">
+      <h2>Adotar é um ato de amor 💜</h2>
+      <p>O The Animal Home conecta corações. Nossa missão é dar uma nova chance a cães, gatos e outros animais,
+         oferecendo um lar cheio de carinho e cuidado.</p>
+      <p>Cada adoção transforma duas vidas: a do animal e a de quem o acolhe.
+         Venha fazer parte dessa família de amor e esperança!</p>
     </div>
-    <ul id="carrinho-list"></ul>
-    <button class="btn-acao" onclick="finalizarAdocao()">Finalizar Adoção</button>
-  </div>
-</section>
+  </section>
 
-<!-- Formulário de adoção -->
-<section id="form-adocao" class="sessao">
-  <h2>Finalize sua adoção</h2>
-  <form id="adocao-form">
-    <input type="text" placeholder="Nome completo" required>
-    <input type="email" placeholder="Email" required>
-    <input type="tel" placeholder="Telefone" required>
-    <button type="submit" class="btn-acao">Enviar Dados</button>
-  </form>
-  <div id="mensagem-final" class="mensagem-final"></div>
-</section>
+  <section id="lista-animais" class="sessao">
+    <h2>Lista de Animais Disponíveis</h2>
 
-<!-- Portal do funcionário -->
-<section id="portal-funcionario" class="sessao">
-  <h2>Portal do Funcionário</h2>
-  <form id="form-login-func">
-    <input type="email" placeholder="Email" required>
-    <input type="password" placeholder="Senha" required>
-    <button type="submit" class="btn-acao">Entrar</button>
-  </form>
-
-  <div id="portal-conteudo" class="oculto">
-    <button class="btn-acao" onclick="sairFuncionario()">Sair da Conta</button>
-    
-    <h3>Cadastrar Novo Animal</h3>
-    <form id="form-cadastro-animal">
-      <input type="text" placeholder="Nome do animal" required>
-      <select required>
-        <option value="">Selecione a espécie</option>
+    <div class="filtros">
+      <select id="filtro-especie">
+        <option value="">Todas as espécies</option>
         <option value="Gato">Gato</option>
         <option value="Cachorro">Cachorro</option>
         <option value="Jacaré">Jacaré</option>
         <option value="Galinha">Galinha</option>
       </select>
-      <input type="number" placeholder="Idade" required>
-      
-      <select required>
-        <option value="">Selecione o sexo</option>
-        <option value="M">Macho</option>
-        <option value="F">Fêmea</option>
+      <select id="filtro-idade">
+        <option value="">Todas as idades</option>
+        <option value="1">1 ano</option>
+        <option value="2">2 anos</option>
+        <option value="3">3 anos</option>
+        <option value="4">4 anos</option>
+        <option value="5+">5 anos ou mais</option>
       </select>
-
-      <select required>
-        <option value="">Selecione o porte</option>
+      <select id="filtro-porte">
+        <option value="">Todos os portes</option>
         <option value="Pequeno">Pequeno</option>
         <option value="Médio">Médio</option>
         <option value="Grande">Grande</option>
       </select>
-      <button type="submit" class="btn-acao">Cadastrar Animal</button>
-    </form>
-    <h3>Animais Cadastrados</h3>
-    <table id="tabela-animais">
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Espécie</th>
-          <th>Idade</th>
-          <th>Porte</th>
-          <th>Status</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+      <button class="btn-acao" onclick="aplicarFiltros()">Filtrar</button>
+    </div>
 
-    <h3>Histórico de Adoções</h3>
-    <table id="tabela-adocoes">
-      <thead>
-        <tr>
-          <th>Animal</th>
-          <th>Adotante</th>
-          <th>Data</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</section>
+    <div id="lista-animais-cards" class="animais-container"></div>
+
+    <div class="carrinho" id="popup-carrinho">
+      <div style="display:flex; align-items:center; gap:10px; justify-content:center;">
+        <img src="images/logo.png" class="logo-popup" alt="Logo">
+        <h3>Carrinho de Adoção 🏠</h3>
+      </div>
+      <ul id="carrinho-list"></ul>
+      <button class="btn-acao" onclick="finalizarAdocao()">Finalizar Adoção</button>
+    </div>
+  </section>
+
+  <section id="form-adocao" class="sessao">
+    <h2>Finalize sua adoção</h2>
+    <form id="adocao-form">
+      <input type="text" placeholder="Nome completo" required>
+      <input type="email" placeholder="Email" required>
+      <input type="tel" placeholder="Telefone" required>
+      <button type="submit" class="btn-acao">Enviar Dados</button>
+    </form>
+    <div id="mensagem-final" class="mensagem-final"></div>
+  </section>
+
+  <section id="portal-funcionario" class="sessao">
+    <h2>Portal do Funcionário</h2>
+    <form id="form-login-func">
+      <input type="email" placeholder="Email" required>
+      <input type="password" placeholder="Senha" required>
+      <button type="submit" class="btn-acao">Entrar</button>
+    </form>
+
+    <div id="portal-conteudo" class="oculto">
+      <button class="btn-acao" onclick="sairFuncionario()">Sair da Conta</button>
+      
+      <h3>Cadastrar Novo Animal</h3>
+      <form id="form-cadastro-animal">
+        <input type="text" id="animal-nome" placeholder="Nome do animal" required>
+        <select id="animal-especie" required>
+          <option value="">Selecione a espécie</option>
+          <option value="Gato">Gato</option>
+          <option value="Cachorro">Cachorro</option>
+          <option value="Jacaré">Jacaré</option>
+          <option value="Galinha">Galinha</option>
+        </select>
+        <input type="number" id="animal-idade" placeholder="Idade" required>
+        <select id="animal-sexo" required>
+          <option value="">Selecione o sexo</option>
+          <option value="M">Macho</option>
+          <option value="F">Fêmea</option>
+        </select>
+        <select id="animal-porte" required>
+          <option value="">Selecione o porte</option>
+          <option value="Pequeno">Pequeno</option>
+          <option value="Médio">Médio</option>
+          <option value="Grande">Grande</option>
+        </select>
+        <input type="text" id="animal-imagem-url" placeholder="Caminho da imagem (ex: images/nome.png)" required>
+        <button type="submit" class="btn-acao">Cadastrar Animal</button>
+      </form>
+      
+      <h3>Animais Cadastrados</h3>
+      <table id="tabela-animais">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Espécie</th>
+            <th>Idade</th>
+            <th>Porte</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <h3>Histórico de Adoções</h3>
+      <table id="tabela-adocoes">
+        <thead>
+          <tr>
+            <th>Animal</th>
+            <th>Adotante</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
 
 </main>
 
