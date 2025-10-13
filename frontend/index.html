@@ -33,7 +33,14 @@
   <section id="lista-animais" class="sessao">
     <h2>Lista de Animais Disponíveis</h2>
     <div class="filtros">
-      <select id="filtro-especie"><option value="">Todas as espécies</option><option value="Gato">Gato</option><option value="Cachorro">Cachorro</option><option value="Jacaré">Jacaré</option><option value="Galinha">Galinha</option></select>
+      <select id="filtro-especie">
+        <option value="">Todas as espécies</option>
+        <option value="Gato">Gato</option>
+        <option value="Cachorro">Cachorro</option>
+        <option value="Jacaré">Jacaré</option>
+        <option value="Galinha">Galinha</option>
+        <option value="Outros">Outros</option>
+      </select>
       <select id="filtro-idade"><option value="">Todas as idades</option><option value="1">1 ano</option><option value="2">2 anos</option><option value="3">3 anos</option><option value="4">4 anos</option><option value="5+">5 anos ou mais</option></select>
       <select id="filtro-porte"><option value="">Todos os portes</option><option value="Pequeno">Pequeno</option><option value="Médio">Médio</option><option value="Grande">Grande</option></select>
       <button class="btn-acao" onclick="aplicarFiltros()">Filtrar</button>
@@ -61,14 +68,52 @@
   <section id="portal-funcionario" class="sessao">
     <h2>Portal do Funcionário</h2>
     <form id="form-login-func">
-      <input type="email" placeholder="Email" required><input type="password" placeholder="Senha" required><button type="submit" class="btn-acao">Entrar</button>
+      <input type="email" placeholder="Email" required>
+      <input type="password" placeholder="Senha" required>
+      <button type="submit" class="btn-acao">Entrar</button>
     </form>
     <div id="portal-conteudo" class="oculto">
       <button class="btn-acao" onclick="sairFuncionario()">Sair da Conta</button>
       <h3>Cadastrar Novo Animal</h3>
+      
       <form id="form-cadastro-animal">
-        <input type="text" id="animal-nome" placeholder="Nome do animal" required><select id="animal-especie" required><option value="">Selecione a espécie</option><option value="Gato">Gato</option><option value="Cachorro">Cachorro</option><option value="Jacaré">Jacaré</option><option value="Galinha">Galinha</option></select><input type="number" id="animal-idade" placeholder="Idade" required><select id="animal-sexo" required><option value="">Selecione o sexo</option><option value="M">Macho</option><option value="F">Fêmea</option></select><select id="animal-porte" required><option value="">Selecione o porte</option><option value="Pequeno">Pequeno</option><option value="Médio">Médio</option><option value="Grande">Grande</option></select><input type="text" id="animal-imagem-url" placeholder="Caminho da imagem (ex: images/nome.png)" required><button type="submit" class="btn-acao">Cadastrar Animal</button>
+        <input type="text" id="animal-nome" placeholder="Nome do animal" required>
+        <select id="animal-especie" required>
+          <option value="">Selecione a espécie</option>
+          <option value="Gato">Gato</option>
+          <option value="Cachorro">Cachorro</option>
+          <option value="Jacaré">Jacaré</option>
+          <option value="Galinha">Galinha</option>
+          <option value="Outros">Outros</option>
+        </select>
+        <input type="number" id="animal-idade" placeholder="Idade" required>
+        <select id="animal-sexo" required>
+          <option value="">Selecione o sexo</option>
+          <option value="M">Macho</option>
+          <option value="F">Fêmea</option>
+        </select>
+        <select id="animal-porte" required>
+          <option value="">Selecione o porte</option>
+          <option value="Pequeno">Pequeno</option>
+          <option value="Médio">Médio</option>
+          <option value="Grande">Grande</option>
+        </select>
+        <select id="animal-imagem-url" required>
+          <option value="">Selecione uma imagem...</option>
+          <option value="images/leao.png">Leao.png</option>
+          <option value="images/Python.png">Python.png</option>
+          <option value="images/betinho.png">betinho.png</option>
+          <option value="images/clementina.png">clementina.png</option>
+          <option value="images/docinho-gato.png">docinho-gato.png</option>
+          <option value="images/juju-jabota.png">juju-jabota.png</option>
+          <option value="images/marcelinho.png">marcelinho.png</option>
+          <option value="images/melzinha.png">melzinha.png</option>
+          <option value="images/tutubarao.png">tutubarao.png</option>
+          <option value="images/ze-jacare.png">ze-jacare.png</option>
+        </select>
+        <button type="submit" class="btn-acao">Cadastrar Animal</button>
       </form>
+      
       <h3>Animais Cadastrados</h3>
       <table id="tabela-animais"><thead><tr><th>Nome</th><th>Espécie</th><th>Idade</th><th>Porte</th><th>Status</th><th>Ações</th></tr></thead><tbody></tbody></table>
       <h3>Histórico de Adoções</h3>
@@ -85,7 +130,6 @@
         <option value="5">5. Listar animais nunca adotados</option>
       </select>
       <div id="resultados-consulta"></div>
-
     </div>
   </section>
 </main>
