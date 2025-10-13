@@ -1,11 +1,12 @@
-\<div align="center"\>
+<div align="center">
+  
+  <h1>The-Animal-Home</h1>
 
-![Logo The Animal Home](frontend/images/logo.png)
+  <img src="frontend/images/logo.png" alt="Logo The Animal Home" width="120"/>
 
-# 🏠💜 The Animal Home
+  <h2>🏠💜 The Animal Home</h2>
 
-\</div\>
-
+</div>
 -----
 
 ## 📖 Sobre o Projeto
@@ -101,4 +102,5 @@ cd The-Animal-Home
       - Clique com o botão direito no arquivo `frontend/index.html`.
       - Selecione "Open with Live Server".
   - O site abrirá no seu navegador, geralmente no endereço `http://127.0.0.1:5500`, e já estará conectado ao seu backend.
+
 
