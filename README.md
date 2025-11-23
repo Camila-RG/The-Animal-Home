@@ -6,6 +6,10 @@
 
 </div>
 
+> ⚠️ **Nota de Migração (SQL → NoSQL):** Este projeto passou por uma evolução arquitetural. Anteriormente baseado em banco relacional (MySQL), a versão atual utiliza **MongoDB** para maior flexibilidade e escalabilidade.
+>
+> *Se você precisa rodar uma versão antiga deste projeto (commits anteriores), consulte a seção **"Versões Legadas"** no final deste documento.*
+
 ## 📖 Sobre o Projeto
 
 The Animal Home é uma plataforma web completa dedicada à adoção responsável de animais, construída com uma arquitetura cliente-servidor.
@@ -14,92 +18,118 @@ Com um design acolhedor e funcional, o sistema permite que visitantes conheçam 
 
 -----
 
-## ✨ Funcionalidades
+## ✨ Funcionalidades (Versão Atual)
 
 ### 👩‍💻 Para Visitantes (Público Geral)
 
   - 🔍 **Filtro de Animais:** Encontre o pet ideal filtrando por espécie, idade e porte.
   - 🐶 **Visualização Completa:** Veja informações e fotos de cada animal.
   - 💜 **Carrinho de Adoção:** Adicione um ou mais animais ao carrinho com uma animação interativa.
-  - 📋 **Formulário de Adoção:** Finalize o processo de adoção preenchendo um formulário completo, incluindo nome, contato e endereço.
+  - 📋 **Formulário de Adoção:** Finalize o processo de adoção preenchendo um formulário completo.
 
 ### 🧑‍🏭 Para Funcionários (Portal Administrativo)
 
   - 🔐 **Acesso Restrito:** Área administrativa protegida por login.
-  - 🐾 **Gerenciamento de Animais (CRUD):** Cadastre novos animais com foto, atualize informações e remova registros.
-  - 📜 **Histórico de Adoções:** Consulte o histórico completo de todas as adoções realizadas.
-  - 🗑️ **Limpeza de Histórico:** Funcionalidade para apagar todos os registros de adoção, com confirmação de segurança.
-  - 📊 **Consultas SQL Interativas:** Execute 5 consultas pré-definidas diretamente da interface para extrair dados estratégicos, como a contagem de animais por espécie ou a lista de animais nunca adotados.
-  - 🚪 **Logout Seguro:** Opção para sair da conta de funcionário.
+  - 🐾 **Gerenciamento de Animais (CRUD):** Cadastre, edite e remova animais do sistema.
+  - 📜 **Histórico de Adoções:** Consulte o histórico completo em tempo real.
+  - 🗑️ **Limpeza de Histórico:** Funcionalidade segura para resetar registros de adoção.
+  - 📊 **Consultas Avançadas (NoSQL):** Execute 5 consultas estratégicas utilizando o *Aggregation Framework* do MongoDB (ex: contagem por espécie, identificar animais nunca adotados, etc).
 
 -----
 
 ## 🛠️ Tecnologias Utilizadas
 
   - **Backend:**
-      - **Node.js:** Ambiente de execução do JavaScript no servidor.
-      - **Express.js:** Framework para a construção da API RESTful.
-      - **MySQL2:** Driver de conexão com o banco de dados MySQL.
-      - **CORS:** Middleware para permitir a comunicação segura entre o frontend e o backend.
-  - **Frontend:**
-      - **HTML5:** Estrutura semântica das páginas.
-      - **CSS3:** Estilização e design da interface.
-      - **JavaScript (ES6+):** Interatividade, manipulação do DOM e comunicação com a API via `fetch`.
+      - **Node.js & Express.js:** API RESTful robusta.
+      - **Mongoose:** MongoDB.
+      - **CORS:** Segurança na comunicação entre rotas.
   - **Banco de Dados:**
-      - **MySQL:** Sistema de gerenciamento de banco de dados relacional.
+      - **MongoDB:** Banco de dados NoSQL orientado a documentos.
+  - **Frontend:**
+      - **HTML5, CSS3, JavaScript (ES6+):** Interface dinâmica sem frameworks pesados.
 
 -----
 
-## 🧭 Como Executar o Projeto
+## 🧭 Como Executar o Projeto (Versão MongoDB)
 
-Para executar este projeto localmente, você precisará ter o **Node.js** e o **MySQL** instalados. Siga os passos abaixo:
+Para a versão atual, você precisa ter o **Node.js** e o **MongoDB** instalados.
 
 **1. Clone o Repositório**
 
 ```bash
-git clone https://github.com/Camila-RG/The-Animal-Home.git
+git clone [https://github.com/Camila-RG/The-Animal-Home.git](https://github.com/Camila-RG/The-Animal-Home.git)
 cd The-Animal-Home
-```
+````
 
-**2. Configure o Banco de Dados**
+**2. Configure o Backend**
 
-  - Conecte-se ao seu MySQL e crie o banco de dados `TheAnimalHome`.
-  - Execute o script do arquivo `backend/db/create_tables.sql` para criar todas as tabelas necessárias.
-
-**3. Configure o Backend**
-
-  - Navegue até a pasta do backend:
+  - Entre na pasta do servidor:
     ```bash
     cd backend
     ```
-  - Instale as dependências do projeto:
+  - Instale as dependências:
     ```bash
     npm install
     ```
-  - Crie um arquivo chamado `.env` na raiz da pasta `backend` e preencha com suas credenciais do MySQL:
-    ```
-    DB_HOST=localhost
-    DB_USER=root
-    DB_PASS=sua_senha_aqui
-    DB_NAME=TheAnimalHome
+  - **Configuração de Ambiente:** Crie um arquivo `.env` na pasta `backend` com a URI do seu MongoDB (local ou Atlas):
+    ```env
+    MONGO_URI=mongodb://localhost:27017/TheAnimalHome
     PORT=3000
     ```
-  - Inicie o servidor do backend:
+  - Inicie o servidor:
     ```bash
-    npm run dev
+    npm start
     ```
-  - O terminal deve exibir a mensagem `🚀 Servidor rodando na porta 3000`. Mantenha este terminal aberto.
+  - *O terminal deve exibir: "Conectado ao MongoDB com sucesso\!"*
 
-**4. Execute o Frontend**
+**3. Execute o Frontend**
 
-  - Abra um novo terminal.
-  - Navegue até a pasta do projeto novamente.
-  - A maneira mais fácil de rodar o frontend é usando a extensão Live Server do VS Code.
-      - Abra a pasta do projeto no VS Code.
-      - Clique com o botão direito no arquivo `frontend/index.html`.
-      - Selecione "Open with Live Server".
-  - O site abrirá no seu navegador, geralmente no endereço `http://127.0.0.1:5500`, e já estará conectado ao seu backend.
+  - Em um **novo terminal**, entre na pasta do frontend:
+    ```bash
+    cd frontend
+    npm install
+    npm start
+    ```
+  - O site abrirá automaticamente no seu navegador.
 
+-----
 
+\<details\>
+\<summary\>📂 \<strong\>Clique aqui para ver instruções da Versão Legada (MySQL)\</strong\>\</summary\>
 
+### 🏛️ Instruções para Commits Anteriores (SQL)
 
+Estas instruções aplicam-se apenas se você estiver rodando uma versão antiga do código fonte que utilizava MySQL.
+
+**Tecnologias Antigas:**
+
+  * MySQL2 (Driver)
+  * Consultas SQL puras
+
+**Como Executar (Legacy):**
+
+1.  **Configure o Banco de Dados:**
+
+      - Conecte-se ao seu MySQL e crie o banco de dados `TheAnimalHome`.
+      - Execute o script do arquivo `backend/db/create_tables.sql`.
+
+2.  **Configure o Backend:**
+
+      - No arquivo `.env`, use as credenciais antigas:
+        ```
+        DB_HOST=localhost
+        DB_USER=root
+        DB_PASS=sua_senha_aqui
+        DB_NAME=TheAnimalHome
+        PORT=3000
+        ```
+      - Rode `npm run dev`.
+
+3.  **Frontend:**
+
+      - Use o "Live Server" do VS Code no arquivo `index.html`.
+
+\</details\>
+
+```
+```
