@@ -41,7 +41,7 @@ Com um design acolhedor e funcional, o sistema permite que visitantes conheçam 
 
   - **Backend:**
       - **Node.js & Express.js:** API RESTful robusta.
-      - **Mongoose:** MongoDB.
+      - **Mongoose:** ODM (Object Data Modeling) para modelagem de dados no MongoDB.
       - **CORS:** Segurança na comunicação entre rotas.
   - **Banco de Dados:**
       - **MongoDB:** Banco de dados NoSQL orientado a documentos.
@@ -71,7 +71,7 @@ cd The-Animal-Home
     ```bash
     npm install
     ```
-  - **Configuração de Ambiente:** Crie um arquivo `.env` na pasta `backend` com a URI do seu MongoDB (local ou Atlas):
+  - **Configuração de Ambiente:** Crie um arquivo `.env` na pasta `backend` com a URI do seu MongoDB:
     ```env
     MONGO_URI=mongodb://localhost:27017/TheAnimalHome
     PORT=3000
@@ -84,13 +84,10 @@ cd The-Animal-Home
 
 **3. Execute o Frontend**
 
-  - Em um **novo terminal**, entre na pasta do frontend:
-    ```bash
-    cd frontend
-    npm install
-    npm start
-    ```
-  - O site abrirá automaticamente no seu navegador.
+  - A maneira mais fácil é usando a extensão **Live Server** do VS Code.
+  - Abra a pasta `frontend` no VS Code.
+  - Clique com o botão direito no arquivo `index.html`.
+  - Selecione **"Open with Live Server"**.
 
 -----
 
