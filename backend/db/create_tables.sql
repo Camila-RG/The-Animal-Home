@@ -24,7 +24,6 @@ CREATE TABLE IF NOT EXISTS Adotante (
   endereco VARCHAR(200)                       -- Endereço residencial
 );
 
--- Tabela que registra cada adoção realizada
 CREATE TABLE IF NOT EXISTS Adocao (
   id_adocao INT PRIMARY KEY AUTO_INCREMENT,   -- Identificador único da adoção
   id_animal INT NOT NULL,                     -- Animal adotado
@@ -34,4 +33,36 @@ CREATE TABLE IF NOT EXISTS Adocao (
   FOREIGN KEY (id_adotante) REFERENCES Adotante(id_adotante) ON DELETE CASCADE -- Relaciona com Adotante
 );
 
-ALTER TABLE Animal ADD COLUMN imagem_url VARCHAR(255) NULL;
+DROP DATABASE TheAnimalHome;
+
+CREATE DATABASE IF NOT EXISTS TheAnimalHome;
+USE TheAnimalHome;
+
+CREATE TABLE IF NOT EXISTS Animal (
+  id_animal INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(100) NOT NULL,
+  especie VARCHAR(100) NOT NULL,
+  idade INT NOT NULL,
+  sexo CHAR(1) NOT NULL,
+  porte VARCHAR(20),
+  imagem_url VARCHAR(255), -- Coluna da imagem incluída corretamente
+  data_chegada DATE,
+  status VARCHAR(20) DEFAULT 'Disponível'
+);
+
+CREATE TABLE IF NOT EXISTS Adotante (
+  id_adotante INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  telefone VARCHAR(20) NOT NULL,
+  endereco VARCHAR(200)
+);
+
+CREATE TABLE IF NOT EXISTS Adocao (
+  id_adocao INT PRIMARY KEY AUTO_INCREMENT,
+  id_animal INT NOT NULL,
+  id_adotante INT NOT NULL,
+  data_adocao DATE NOT NULL,
+  FOREIGN KEY (id_animal) REFERENCES Animal(id_animal) ON DELETE CASCADE,
+  FOREIGN KEY (id_adotante) REFERENCES Adotante(id_adotante) ON DELETE CASCADE
+);

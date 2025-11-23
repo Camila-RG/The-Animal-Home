@@ -148,6 +148,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Remove um animal
+// Remove um animal
 router.delete('/:id', async (req, res) => {
   try {
     const animalRemovido = await Animal.findByIdAndDelete(req.params.id);
