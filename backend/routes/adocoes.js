@@ -50,56 +50,47 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Registra uma nova adoção (com transação)
+// Registra uma nova adoção
 router.post('/', async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  
   try {
     const { id_animal, id_adotante, data_adocao } = req.body;
     
     // Validação
     if (!id_animal || !id_adotante) {
-      await session.abortTransaction();
       return res.status(400).json({
         erro: 'Campos obrigatórios: id_animal, id_adotante'
       });
     }
     
-    // Verifica se o animal existe e está disponível
-    const animal = await Animal.findById(id_animal).session(session);
+    // Verifica se o animal existe
+    const animal = await Animal.findById(id_animal);
     if (!animal) {
-      await session.abortTransaction();
       return res.status(404).json({ erro: 'Animal não encontrado' });
     }
     
+    // Verifica se já não foi adotado
     if (animal.status === 'Adotado') {
-      await session.abortTransaction();
       return res.status(400).json({ erro: 'Animal já foi adotado' });
     }
     
     // Verifica se o adotante existe
-    const adotante = await Adotante.findById(id_adotante).session(session);
+    const adotante = await Adotante.findById(id_adotante);
     if (!adotante) {
-      await session.abortTransaction();
       return res.status(404).json({ erro: 'Adotante não encontrado' });
     }
     
-    // Cria a adoção
+    // 1. Cria e Salva a adoção
     const novaAdocao = new Adocao({
       id_animal,
       id_adotante,
       data_adocao: data_adocao || new Date()
     });
     
-    await novaAdocao.save({ session });
+    await novaAdocao.save();
     
-    // Atualiza o status do animal
+    // 2. Atualiza o status do animal e Salva
     animal.status = 'Adotado';
-    await animal.save({ session });
-    
-    // Confirma a transação
-    await session.commitTransaction();
+    await animal.save();
     
     res.status(201).json({
       mensagem: 'Adoção registrada com sucesso!',
@@ -107,56 +98,43 @@ router.post('/', async (req, res) => {
     });
     
   } catch (erro) {
-    await session.abortTransaction();
     console.error('Erro ao registrar adoção:', erro);
     res.status(500).json({ erro: 'Erro ao registrar adoção' });
-  } finally {
-    session.endSession();
   }
 });
 
 // Cancela uma adoção
+// Cancela uma adoção (CORRIGIDO: Sem transações)
 router.delete('/:id', async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  
   try {
-    // Busca a adoção
-    const adocao = await Adocao.findById(req.params.id).session(session);
+    // Busca a adoção antes de apagar para saber qual animal liberar
+    const adocao = await Adocao.findById(req.params.id);
     
     if (!adocao) {
-      await session.abortTransaction();
       return res.status(404).json({ erro: 'Adoção não encontrada' });
     }
     
     const id_animal = adocao.id_animal;
     
     // Remove a adoção
-    await Adocao.findByIdAndDelete(req.params.id).session(session);
+    await Adocao.findByIdAndDelete(req.params.id);
     
-    // Verifica se há outras adoções desse animal
-    const outrasAdocoes = await Adocao.countDocuments({ 
-      id_animal 
-    }).session(session);
-    
-    // Se não há outras adoções, marca animal como disponível
-    if (outrasAdocoes === 0) {
-      await Animal.findByIdAndUpdate(
-        id_animal,
-        { status: 'Disponível' },
-        { session }
-      );
+    // Verifica se o animal deve voltar a ser disponível
+    if (id_animal) {
+       // Se não sobrou nenhuma outra adoção para este animal...
+       const outrasAdocoes = await Adocao.countDocuments({ id_animal });
+       
+       if (outrasAdocoes === 0) {
+         // ...ele volta para status Disponível
+         await Animal.findByIdAndUpdate(id_animal, { status: 'Disponível' });
+       }
     }
     
-    await session.commitTransaction();
     res.json({ mensagem: 'Adoção cancelada com sucesso!' });
     
   } catch (erro) {
-    await session.abortTransaction();
     console.error('Erro ao cancelar adoção:', erro);
     res.status(500).json({ erro: 'Erro ao cancelar adoção' });
-  } finally {
-    session.endSession();
   }
 });
 

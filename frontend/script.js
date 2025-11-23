@@ -138,9 +138,9 @@ document.getElementById("adocao-form").addEventListener("submit", async function
     }
     
     const novoAdotante = await resAdotante.json();
-    // MongoDB retorna _id, mas a API formata como id_adotante
     const idAdotante = novoAdotante.id_adotante || novoAdotante._id;
     
+    // Loop para registrar cada adoção
     for (const animal of carrinho) {
       const idAnimal = animal.id_animal || animal._id;
       await fetch(`${API_URL}/adocoes`, {
@@ -155,6 +155,10 @@ document.getElementById("adocao-form").addEventListener("submit", async function
     
     carrinho = [];
     atualizarCarrinho();
+    
+    await atualizarHistorico();      
+    await atualizarTabelaAnimais();  
+    
     mensagem.innerHTML = "💖 Obrigado! Entraremos em contato para finalizar o processo de adoção!";
     form.reset();
   } catch (error) {

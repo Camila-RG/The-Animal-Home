@@ -24,15 +24,17 @@ router.get('/:id', async (req, res) => {
           .populate('id_adotante', 'nome email')
           .sort({ data_adocao: -1 });
         
-        resultado = adocoes.map(a => ({
-          id_adocao: a._id,
-          animal: a.id_animal.nome,
-          especie: a.id_animal.especie,
-          adotante: a.id_adotante.nome,
-          email: a.id_adotante.email,
-          data_adocao: a.data_adocao
-        }));
-        break;
+          resultado = adocoes.map(a => ({
+            id_adocao: a._id,
+            // Verifica se o animal ainda existe (?) Se sim, pega o nome. Se não (:), escreve aviso
+            animal: a.id_animal ? a.id_animal.nome : 'Animal Removido',
+            especie: a.id_animal ? a.id_animal.especie : '-',
+            // Mesma proteção para o adotante
+            adotante: a.id_adotante ? a.id_adotante.nome : 'Adotante Removido',
+            email: a.id_adotante ? a.id_adotante.email : '-',
+            data_adocao: a.data_adocao
+          }));
+          break;
         
       case '3':
         // 3. Conta animais por espécie

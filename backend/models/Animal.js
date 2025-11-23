@@ -10,7 +10,7 @@ const animalSchema = new mongoose.Schema({
   especie: {
     type: String,
     required: [true, 'Espécie é obrigatória'],
-    enum: ['Cachorro', 'Gato', 'Jacaré', 'Galinha'],
+    enum: ['Cachorro', 'Gato', 'Jacaré', 'Galinha','Outros'],
     trim: true
   },
   idade: {
