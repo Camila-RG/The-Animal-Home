@@ -1,182 +1,172 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db/connection');
+const Adocao = require('../models/Adocao');
+const Animal = require('../models/Animal');
+const Adotante = require('../models/Adotante');
+const mongoose = require('mongoose');
 
-// Lista todas as adoções, trazendo dados do animal e do adotante
+// Lista todas as adoções com dados do animal e adotante
 router.get('/', async (req, res) => {
   try {
-    const [adocoes] = await db.query(`
-      SELECT
-        a.id_adocao,
-        a.data_adocao,
-        an.id_animal,
-        an.nome AS nome_animal,
-        an.especie,
-        ad.id_adotante,
-        ad.nome AS nome_adotante,
-        ad.email
-      FROM Adocao a
-      JOIN Animal an ON a.id_animal = an.id_animal
-      JOIN Adotante ad ON a.id_adotante = ad.id_adotante
-      ORDER BY a.data_adocao DESC
-    `);
-    res.json(adocoes);
+    const adocoes = await Adocao.find()
+      .populate('id_animal', 'nome especie') // Popula dados do animal
+      .populate('id_adotante', 'nome email') // Popula dados do adotante
+      .sort({ data_adocao: -1 });
+    
+    // Formata a resposta para manter compatibilidade com frontend
+    const adocoesFormatadas = adocoes.map(adocao => ({
+      id_adocao: adocao._id,
+      data_adocao: adocao.data_adocao,
+      id_animal: adocao.id_animal._id,
+      nome_animal: adocao.id_animal.nome,
+      especie: adocao.id_animal.especie,
+      id_adotante: adocao.id_adotante._id,
+      nome_adotante: adocao.id_adotante.nome,
+      email: adocao.id_adotante.email
+    }));
+    
+    res.json(adocoesFormatadas);
   } catch (erro) {
     console.error('Erro ao buscar adoções:', erro);
     res.status(500).json({ erro: 'Erro ao buscar adoções' });
   }
 });
 
-// Busca uma adoção específica pelo ID
+// Busca uma adoção específica
 router.get('/:id', async (req, res) => {
   try {
-    const [adocoes] = await db.query(`
-      SELECT
-        a.id_adocao,
-        a.data_adocao,
-        an.id_animal,
-        an.nome AS nome_animal,
-        an.especie,
-        ad.id_adotante,
-        ad.nome AS nome_adotante,
-        ad.email,
-        ad.telefone
-      FROM Adocao a
-      JOIN Animal an ON a.id_animal = an.id_animal
-      JOIN Adotante ad ON a.id_adotante = ad.id_adotante
-      WHERE a.id_adocao = ?
-    `, [req.params.id]);
-
-    if (adocoes.length === 0) {
+    const adocao = await Adocao.findById(req.params.id)
+      .populate('id_animal')
+      .populate('id_adotante');
+    
+    if (!adocao) {
       return res.status(404).json({ erro: 'Adoção não encontrada' });
     }
-
-    res.json(adocoes[0]);
+    
+    res.json(adocao);
   } catch (erro) {
     console.error('Erro ao buscar adoção:', erro);
     res.status(500).json({ erro: 'Erro ao buscar adoção' });
   }
 });
 
-// Registra uma nova adoção
+// Registra uma nova adoção (com transação)
 router.post('/', async (req, res) => {
-  const conexao = await db.getConnection();
+  const session = await mongoose.startSession();
+  session.startTransaction();
   
   try {
     const { id_animal, id_adotante, data_adocao } = req.body;
-
+    
+    // Validação
     if (!id_animal || !id_adotante) {
+      await session.abortTransaction();
       return res.status(400).json({
         erro: 'Campos obrigatórios: id_animal, id_adotante'
       });
     }
-
-    await conexao.beginTransaction();
-
-    const [animais] = await conexao.query(
-      'SELECT * FROM Animal WHERE id_animal = ? FOR UPDATE',
-      [id_animal]
-    );
-
-    if (animais.length === 0) {
-      await conexao.rollback();
+    
+    // Verifica se o animal existe e está disponível
+    const animal = await Animal.findById(id_animal).session(session);
+    if (!animal) {
+      await session.abortTransaction();
       return res.status(404).json({ erro: 'Animal não encontrado' });
     }
-
-    if (animais[0].status === 'Adotado') {
-      await conexao.rollback();
+    
+    if (animal.status === 'Adotado') {
+      await session.abortTransaction();
       return res.status(400).json({ erro: 'Animal já foi adotado' });
     }
-
-    const [adotantes] = await conexao.query(
-      'SELECT * FROM Adotante WHERE id_adotante = ?',
-      [id_adotante]
-    );
-
-    if (adotantes.length === 0) {
-      await conexao.rollback();
+    
+    // Verifica se o adotante existe
+    const adotante = await Adotante.findById(id_adotante).session(session);
+    if (!adotante) {
+      await session.abortTransaction();
       return res.status(404).json({ erro: 'Adotante não encontrado' });
     }
-
-    const [resultadoAdocao] = await conexao.query(
-      'INSERT INTO Adocao (id_animal, id_adotante, data_adocao) VALUES (?, ?, ?)',
-      [id_animal, id_adotante, data_adocao || new Date()]
-    );
-
-    await conexao.query(
-      'UPDATE Animal SET status = ? WHERE id_animal = ?',
-      ['Adotado', id_animal]
-    );
-
-    await conexao.commit();
-
+    
+    // Cria a adoção
+    const novaAdocao = new Adocao({
+      id_animal,
+      id_adotante,
+      data_adocao: data_adocao || new Date()
+    });
+    
+    await novaAdocao.save({ session });
+    
+    // Atualiza o status do animal
+    animal.status = 'Adotado';
+    await animal.save({ session });
+    
+    // Confirma a transação
+    await session.commitTransaction();
+    
     res.status(201).json({
       mensagem: 'Adoção registrada com sucesso!',
-      id_adocao: resultadoAdocao.insertId
+      id_adocao: novaAdocao._id
     });
-
+    
   } catch (erro) {
-    await conexao.rollback();
+    await session.abortTransaction();
     console.error('Erro ao registrar adoção:', erro);
     res.status(500).json({ erro: 'Erro ao registrar adoção' });
   } finally {
-    conexao.release();
+    session.endSession();
   }
 });
 
 // Cancela uma adoção
 router.delete('/:id', async (req, res) => {
-  const conexao = await db.getConnection();
+  const session = await mongoose.startSession();
+  session.startTransaction();
   
   try {
-    await conexao.beginTransaction();
-
-    const [adocoes] = await conexao.query(
-      'SELECT id_animal FROM Adocao WHERE id_adocao = ?',
-      [req.params.id]
-    );
-
-    if (adocoes.length === 0) {
-      await conexao.rollback();
+    // Busca a adoção
+    const adocao = await Adocao.findById(req.params.id).session(session);
+    
+    if (!adocao) {
+      await session.abortTransaction();
       return res.status(404).json({ erro: 'Adoção não encontrada' });
     }
-
-    const id_animal = adocoes[0].id_animal;
-
-    await conexao.query('DELETE FROM Adocao WHERE id_adocao = ?', [req.params.id]);
-
-    const [outrasAdocoes] = await conexao.query(
-      'SELECT COUNT(*) as total FROM Adocao WHERE id_animal = ?',
-      [id_animal]
-    );
-
-    if (outrasAdocoes[0].total === 0) {
-      await conexao.query(
-        'UPDATE Animal SET status = ? WHERE id_animal = ?',
-        ['Disponível', id_animal]
+    
+    const id_animal = adocao.id_animal;
+    
+    // Remove a adoção
+    await Adocao.findByIdAndDelete(req.params.id).session(session);
+    
+    // Verifica se há outras adoções desse animal
+    const outrasAdocoes = await Adocao.countDocuments({ 
+      id_animal 
+    }).session(session);
+    
+    // Se não há outras adoções, marca animal como disponível
+    if (outrasAdocoes === 0) {
+      await Animal.findByIdAndUpdate(
+        id_animal,
+        { status: 'Disponível' },
+        { session }
       );
     }
-
-    await conexao.commit();
+    
+    await session.commitTransaction();
     res.json({ mensagem: 'Adoção cancelada com sucesso!' });
-
+    
   } catch (erro) {
-    await conexao.rollback();
+    await session.abortTransaction();
     console.error('Erro ao cancelar adoção:', erro);
     res.status(500).json({ erro: 'Erro ao cancelar adoção' });
   } finally {
-    conexao.release();
+    session.endSession();
   }
 });
 
-// ROTA NOVA: Remove todos os registros de adoção (limpa o histórico)
+// Limpa todo o histórico de adoções
 router.delete('/historico/limpar', async (req, res) => {
   try {
-    // Executa o comando para apagar todos os dados da tabela Adocao
-    await db.query('TRUNCATE TABLE Adocao');
+    await Adocao.deleteMany({});
     res.json({ mensagem: 'Histórico de adoções foi limpo com sucesso!' });
   } catch (erro) {
-    console.error('Erro ao limpar histórico de adoções:', erro);
+    console.error('Erro ao limpar histórico:', erro);
     res.status(500).json({ erro: 'Erro ao limpar o histórico' });
   }
 });

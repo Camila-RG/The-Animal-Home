@@ -1,14 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db/connection');
+const Adotante = require('../models/Adotante');
 
-// Lista todos os adotantes cadastrados
+// Lista todos os adotantes
 router.get('/', async (req, res) => {
   try {
-    const [adotantes] = await db.query('SELECT * FROM Adotante');
+    const adotantes = await Adotante.find().sort({ createdAt: -1 });
     res.json(adotantes);
   } catch (erro) {
-    // Se ocorrer erro na consulta, retorna erro 500
     console.error('Erro ao buscar adotantes:', erro);
     res.status(500).json({ erro: 'Erro ao buscar adotantes' });
   }
@@ -17,17 +16,13 @@ router.get('/', async (req, res) => {
 // Busca um adotante específico pelo ID
 router.get('/:id', async (req, res) => {
   try {
-    const [adotantes] = await db.query(
-      'SELECT * FROM Adotante WHERE id_adotante = ?',
-      [req.params.id]
-    );
-
-    // Retorna erro se não encontrar adotante
-    if (adotantes.length === 0) {
+    const adotante = await Adotante.findById(req.params.id);
+    
+    if (!adotante) {
       return res.status(404).json({ erro: 'Adotante não encontrado' });
     }
-
-    res.json(adotantes[0]);
+    
+    res.json(adotante);
   } catch (erro) {
     console.error('Erro ao buscar adotante:', erro);
     res.status(500).json({ erro: 'Erro ao buscar adotante' });
@@ -38,67 +33,91 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { nome, email, telefone, endereco } = req.body;
-
-    // Validação dos campos obrigatórios
+    
+    // Validação básica
     if (!nome || !email || !telefone) {
-      return res.status(400).json({ 
-        erro: 'Campos obrigatórios: nome, email, telefone' 
+      return res.status(400).json({
+        erro: 'Campos obrigatórios: nome, email, telefone'
       });
     }
-
-    // Insere o adotante na base de dados
-    const [resultado] = await db.query(
-      'INSERT INTO Adotante (nome, email, telefone, endereco) VALUES (?, ?, ?, ?)',
-      [nome, email, telefone, endereco || null]
-    );
-
+    
+    // Verifica se o email já existe
+    const adotanteExistente = await Adotante.findOne({ email });
+    if (adotanteExistente) {
+      return res.status(400).json({ erro: 'Email já cadastrado' });
+    }
+    
+    // Cria novo adotante
+    const novoAdotante = new Adotante({
+      nome,
+      email,
+      telefone,
+      endereco
+    });
+    
+    const adotanteSalvo = await novoAdotante.save();
+    
     res.status(201).json({
       mensagem: 'Adotante cadastrado com sucesso!',
-      id_adotante: resultado.insertId
+      id_adotante: adotanteSalvo._id,
+      adotante: adotanteSalvo
     });
   } catch (erro) {
     console.error('Erro ao cadastrar adotante:', erro);
+    
+    // Erro de validação
+    if (erro.name === 'ValidationError') {
+      return res.status(400).json({ erro: erro.message });
+    }
+    
+    // Erro de duplicação (email único)
+    if (erro.code === 11000) {
+      return res.status(400).json({ erro: 'Email já cadastrado' });
+    }
+    
     res.status(500).json({ erro: 'Erro ao cadastrar adotante' });
   }
 });
 
-// Atualiza os dados de um adotante existente
+// Atualiza um adotante existente
 router.put('/:id', async (req, res) => {
   try {
     const { nome, email, telefone, endereco } = req.body;
-    const { id } = req.params;
-
-    // Atualiza os dados no banco
-    const [resultado] = await db.query(
-      'UPDATE Adotante SET nome = ?, email = ?, telefone = ?, endereco = ? WHERE id_adotante = ?',
-      [nome, email, telefone, endereco, id]
+    
+    const adotanteAtualizado = await Adotante.findByIdAndUpdate(
+      req.params.id,
+      { nome, email, telefone, endereco },
+      { new: true, runValidators: true }
     );
-
-    // Se não encontrou adotante para atualizar
-    if (resultado.affectedRows === 0) {
+    
+    if (!adotanteAtualizado) {
       return res.status(404).json({ erro: 'Adotante não encontrado' });
     }
-
-    res.json({ mensagem: 'Adotante atualizado com sucesso!' });
+    
+    res.json({
+      mensagem: 'Adotante atualizado com sucesso!',
+      adotante: adotanteAtualizado
+    });
   } catch (erro) {
     console.error('Erro ao atualizar adotante:', erro);
+    
+    if (erro.code === 11000) {
+      return res.status(400).json({ erro: 'Email já cadastrado por outro adotante' });
+    }
+    
     res.status(500).json({ erro: 'Erro ao atualizar adotante' });
   }
 });
 
-// Remove um adotante do sistema
+// Remove um adotante
 router.delete('/:id', async (req, res) => {
   try {
-    const [resultado] = await db.query(
-      'DELETE FROM Adotante WHERE id_adotante = ?',
-      [req.params.id]
-    );
-
-    // Se não encontrou adotante para remover
-    if (resultado.affectedRows === 0) {
+    const adotanteRemovido = await Adotante.findByIdAndDelete(req.params.id);
+    
+    if (!adotanteRemovido) {
       return res.status(404).json({ erro: 'Adotante não encontrado' });
     }
-
+    
     res.json({ mensagem: 'Adotante removido com sucesso!' });
   } catch (erro) {
     console.error('Erro ao remover adotante:', erro);
@@ -106,5 +125,4 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Exporta as rotas para uso no app principal
 module.exports = router;

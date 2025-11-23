@@ -60,7 +60,17 @@ async function atualizarLista() {
       lista.innerHTML = "<p>Nenhum animal encontrado com esses filtros. 🐾</p>";
       return;
     }
-    lista.innerHTML = animais.map(a => `<div class="card"><img src="${a.imagem_url || 'images/logo.png'}" alt="${a.nome}"><h3>${a.nome}</h3><p>${a.especie} - ${a.idade} anos - ${a.porte}</p><button onclick='adicionarCarrinho(${JSON.stringify(a)}, event)'>Adotar</button></div>`).join('');
+    lista.innerHTML = animais.map(a => {
+      const imagemSrc = a.imagem_url || 'images/logo.png';
+      // MongoDB usa _id ao invés de id_animal
+      const animalId = a._id || a.id_animal;
+      return `<div class="card">
+        <img src="${imagemSrc}" alt="${a.nome}">
+        <h3>${a.nome}</h3>
+        <p>${a.especie} - ${a.idade} anos - ${a.porte || 'N/A'}</p>
+        <button onclick='adicionarCarrinho(${JSON.stringify({...a, id_animal: animalId})}, event)'>Adotar</button>
+      </div>`;
+    }).join('');
   } catch (error) {
     console.error("Erro ao atualizar lista:", error);
     lista.innerHTML = "<p>Ocorreu um erro ao carregar os animais. Tente novamente mais tarde.</p>";
@@ -68,6 +78,11 @@ async function atualizarLista() {
 }
 
 function adicionarCarrinho(animal, e) {
+  // Garante que sempre tenha id_animal (compatibilidade)
+  if (!animal.id_animal && animal._id) {
+    animal.id_animal = animal._id;
+  }
+  
   if (animal && !carrinho.some(item => item.id_animal === animal.id_animal)) {
     carrinho.push(animal);
     atualizarCarrinho();
@@ -104,28 +119,47 @@ document.getElementById("adocao-form").addEventListener("submit", async function
   const telefoneAdotante = form.querySelector('input[type="tel"]').value;
   const enderecoAdotante = form.querySelector('input[placeholder="Endereço completo"]').value;
   const mensagem = document.getElementById("mensagem-final");
+  
   try {
     const resAdotante = await fetch(`${API_URL}/adotantes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome: nomeAdotante, email: emailAdotante, telefone: telefoneAdotante, endereco: enderecoAdotante })
+      body: JSON.stringify({ 
+        nome: nomeAdotante, 
+        email: emailAdotante, 
+        telefone: telefoneAdotante, 
+        endereco: enderecoAdotante 
+      })
     });
-    if (!resAdotante.ok) throw new Error('Falha ao cadastrar adotante.');
+    
+    if (!resAdotante.ok) {
+      const errorData = await resAdotante.json();
+      throw new Error(errorData.erro || 'Falha ao cadastrar adotante.');
+    }
+    
     const novoAdotante = await resAdotante.json();
+    // MongoDB retorna _id, mas a API formata como id_adotante
+    const idAdotante = novoAdotante.id_adotante || novoAdotante._id;
+    
     for (const animal of carrinho) {
+      const idAnimal = animal.id_animal || animal._id;
       await fetch(`${API_URL}/adocoes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id_animal: animal.id_animal, id_adotante: novoAdotante.id_adotante })
+        body: JSON.stringify({ 
+          id_animal: idAnimal, 
+          id_adotante: idAdotante 
+        })
       });
     }
+    
     carrinho = [];
     atualizarCarrinho();
     mensagem.innerHTML = "💖 Obrigado! Entraremos em contato para finalizar o processo de adoção!";
     form.reset();
   } catch (error) {
     console.error("Erro ao finalizar adoção:", error);
-    mensagem.innerHTML = "❌ Ops! Ocorreu um erro ao registrar a adoção. Tente novamente.";
+    mensagem.innerHTML = `❌ Ops! ${error.message}`;
   }
 });
 
@@ -158,16 +192,19 @@ document.getElementById("form-cadastro-animal").addEventListener("submit", async
     imagem_url: document.getElementById("animal-imagem-url").value,
     status: "Disponível"
   };
+  
   try {
     const response = await fetch(`${API_URL}/animais`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(novoAnimal)
     });
+    
     if (!response.ok) {
       const erroData = await response.json();
       throw new Error(erroData.erro || 'Erro ao cadastrar animal.');
     }
+    
     alert('Animal cadastrado com sucesso!');
     atualizarTabelaAnimais();
     this.reset();
@@ -179,22 +216,44 @@ document.getElementById("form-cadastro-animal").addEventListener("submit", async
 
 async function atualizarTabelaAnimais() {
   const tbody = document.querySelector("#tabela-animais tbody");
-  tbody.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="7">Carregando...</td></tr>';
+  
   try {
     const response = await fetch(`${API_URL}/animais`);
     const animais = await response.json();
-    tbody.innerHTML = animais.map(a => `<tr><td>${a.nome}</td><td>${a.especie}</td><td>${a.idade}</td><td>${a.porte}</td><td>${a.status}</td><td><button onclick="removerAnimal(${a.id_animal})">Remover</button></td></tr>`).join('');
+    
+    tbody.innerHTML = animais.map(a => {
+      const imagemPreview = a.imagem_url ? 
+        `<img src="${a.imagem_url}" alt="${a.nome}" style="max-width: 50px; max-height: 50px; border-radius: 5px;">` : 
+        'Sem imagem';
+      // MongoDB usa _id
+      const animalId = a._id || a.id_animal;
+      return `<tr>
+        <td>${a.nome}</td>
+        <td>${a.especie}</td>
+        <td>${a.idade}</td>
+        <td>${a.porte || 'N/A'}</td>
+        <td>${a.status}</td>
+        <td>${imagemPreview}</td>
+        <td><button onclick="removerAnimal('${animalId}')">Remover</button></td>
+      </tr>`;
+    }).join('');
   } catch (error) {
     console.error("Erro ao buscar animais:", error);
-    tbody.innerHTML = '<tr><td colspan="6">Erro ao carregar animais.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7">Erro ao carregar animais.</td></tr>';
   }
 }
 
 async function removerAnimal(id_animal) {
   if (!confirm('Tem certeza que deseja remover este animal do sistema?')) return;
+  
   try {
-    const response = await fetch(`${API_URL}/animais/${id_animal}`, { method: 'DELETE' });
+    const response = await fetch(`${API_URL}/animais/${id_animal}`, { 
+      method: 'DELETE' 
+    });
+    
     if (!response.ok) throw new Error('Falha ao remover.');
+    
     alert('Animal removido com sucesso!');
     atualizarTabelaAnimais();
   } catch (error) {
@@ -212,14 +271,24 @@ function sairFuncionario() {
 async function atualizarHistorico() {
   const tbody = document.querySelector("#tabela-adocoes tbody");
   tbody.innerHTML = '<tr><td colspan="3">Carregando...</td></tr>';
+  
   try {
     const response = await fetch(`${API_URL}/adocoes`);
     const adocoes = await response.json();
+    
     if (adocoes.length === 0) {
       tbody.innerHTML = '<tr><td colspan="3">Nenhuma adoção registrada ainda.</td></tr>';
       return;
     }
-    tbody.innerHTML = adocoes.map(a => `<tr><td>${a.nome_animal}</td><td>${a.nome_adotante}</td><td>${new Date(a.data_adocao).toLocaleDateString('pt-BR')}</td></tr>`).join('');
+    
+    tbody.innerHTML = adocoes.map(a => {
+      const dataAdocao = new Date(a.data_adocao).toLocaleDateString('pt-BR');
+      return `<tr>
+        <td>${a.nome_animal}</td>
+        <td>${a.nome_adotante}</td>
+        <td>${dataAdocao}</td>
+      </tr>`;
+    }).join('');
   } catch (error) {
     console.error("Erro ao buscar histórico:", error);
     tbody.innerHTML = '<tr><td colspan="3">Erro ao carregar histórico.</td></tr>';
@@ -228,9 +297,14 @@ async function atualizarHistorico() {
 
 async function limparHistorico() {
   if (!confirm('Tem certeza que deseja apagar TODO o histórico de adoções? Esta ação não pode ser desfeita.')) return;
+  
   try {
-    const response = await fetch(`${API_URL}/adocoes/historico/limpar`, { method: 'DELETE' });
+    const response = await fetch(`${API_URL}/adocoes/historico/limpar`, { 
+      method: 'DELETE' 
+    });
+    
     if (!response.ok) throw new Error('Falha ao limpar o histórico.');
+    
     const resultado = await response.json();
     alert(resultado.mensagem);
     atualizarHistorico();
@@ -240,12 +314,11 @@ async function limparHistorico() {
   }
 }
 
-// NOVA FUNÇÃO PARA EXECUTAR CONSULTAS PERSONALIZADAS
+// Função para executar consultas personalizadas
 async function executarConsulta() {
   const consultaId = document.getElementById('seletor-consulta').value;
   const containerResultados = document.getElementById('resultados-consulta');
   
-  // Limpa os resultados anteriores se o usuário selecionar a opção vazia
   if (!consultaId) {
     containerResultados.innerHTML = '';
     return;
@@ -259,7 +332,6 @@ async function executarConsulta() {
 
     const resultados = await response.json();
 
-    // Se a consulta não retornar dados
     if (resultados.length === 0) {
       containerResultados.innerHTML = '<p>A consulta não retornou resultados.</p>';
       return;
@@ -268,18 +340,26 @@ async function executarConsulta() {
     // Cria a tabela de resultados dinamicamente
     const headers = Object.keys(resultados[0]);
     let tabelaHTML = '<table><thead><tr>';
-    headers.forEach(header => tabelaHTML += `<th>${header}</th>`);
+    headers.forEach(header => {
+      // Pula o campo _id do MongoDB (não precisa mostrar)
+      if (header !== '_id' && header !== '__v') {
+        tabelaHTML += `<th>${header}</th>`;
+      }
+    });
     tabelaHTML += '</tr></thead><tbody>';
 
     resultados.forEach(linha => {
       tabelaHTML += '<tr>';
       headers.forEach(header => {
-        let valor = linha[header];
-        // Formata a data se for uma
-        if (typeof valor === 'string' && valor.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)) {
-          valor = new Date(valor).toLocaleDateString('pt-BR');
+        // Pula o campo _id do MongoDB
+        if (header !== '_id' && header !== '__v') {
+          let valor = linha[header];
+          // Formata a data se for uma
+          if (typeof valor === 'string' && valor.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)) {
+            valor = new Date(valor).toLocaleDateString('pt-BR');
+          }
+          tabelaHTML += `<td>${valor !== null && valor !== undefined ? valor : 'N/A'}</td>`;
         }
-        tabelaHTML += `<td>${valor}</td>`;
       });
       tabelaHTML += '</tr>';
     });
@@ -292,7 +372,6 @@ async function executarConsulta() {
     containerResultados.innerHTML = '<p>Ocorreu um erro ao executar a consulta.</p>';
   }
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
   mostrarSessao('inicio');

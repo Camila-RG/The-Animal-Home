@@ -1,71 +1,111 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db/connection');
+const Animal = require('../models/Animal');
+const Adotante = require('../models/Adotante');
+const Adocao = require('../models/Adocao');
 
-// Rota principal para executar consultas pré-definidas com base em um ID
+// Rota para executar consultas predefinidas
 router.get('/:id', async (req, res) => {
   const consultaId = req.params.id;
-  let query = '';
-
-  // Seleciona a query SQL com base no ID recebido
-  switch (consultaId) {
-    case '1':
-      // 1. Lista todos os animais que estão disponíveis para adoção
-      query = `SELECT * FROM Animal WHERE status = 'Disponível'`;
-      break;
-    case '2':
-      // 2. Traz o histórico completo de adoções
-      query = `
-        SELECT 
-          a.id_adocao,
-          an.nome AS animal,
-          an.especie,
-          ad.nome AS adotante,
-          ad.email,
-          a.data_adocao
-        FROM Adocao a
-        JOIN Animal an ON a.id_animal = an.id_animal
-        JOIN Adotante ad ON a.id_adotante = ad.id_adotante
-        ORDER BY a.data_adocao DESC
-      `;
-      break;
-    case '3':
-      // 3. Conta quantos animais existem de cada espécie
-      query = `
-        SELECT especie, COUNT(*) as total
-        FROM Animal
-        GROUP BY especie
-      `;
-      break;
-    case '4':
-      // 4. Lista os adotantes com o total de adoções feitas
-      query = `
-        SELECT 
-          ad.nome AS adotante,
-          ad.email,
-          COUNT(a.id_adocao) as total_adocoes
-        FROM Adotante ad
-        LEFT JOIN Adocao a ON ad.id_adotante = a.id_adotante
-        GROUP BY ad.id_adotante, ad.nome, ad.email
-        HAVING total_adocoes > 0
-      `;
-      break;
-    case '5':
-      // 5. Mostra os animais que nunca foram adotados
-      query = `SELECT * FROM Animal WHERE id_animal NOT IN (SELECT id_animal FROM Adocao)`;
-      break;
-    default:
-      // Se o ID não for válido, retorna um erro
-      return res.status(400).json({ erro: 'Consulta não encontrada' });
-  }
-
+  
   try {
-    // Executa a query selecionada e retorna o resultado
-    const [resultados] = await db.query(query);
-    res.json(resultados);
+    let resultado;
+    
+    switch (consultaId) {
+      case '1':
+        // 1. Lista animais disponíveis
+        resultado = await Animal.find({ status: 'Disponível' });
+        break;
+        
+      case '2':
+        // 2. Histórico completo de adoções
+        const adocoes = await Adocao.find()
+          .populate('id_animal', 'nome especie')
+          .populate('id_adotante', 'nome email')
+          .sort({ data_adocao: -1 });
+        
+        resultado = adocoes.map(a => ({
+          id_adocao: a._id,
+          animal: a.id_animal.nome,
+          especie: a.id_animal.especie,
+          adotante: a.id_adotante.nome,
+          email: a.id_adotante.email,
+          data_adocao: a.data_adocao
+        }));
+        break;
+        
+      case '3':
+        // 3. Conta animais por espécie
+        resultado = await Animal.aggregate([
+          {
+            $group: {
+              _id: '$especie',
+              total: { $sum: 1 }
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              especie: '$_id',
+              total: 1
+            }
+          },
+          { $sort: { total: -1 } }
+        ]);
+        break;
+        
+      case '4':
+        // 4. Lista adotantes com total de adoções
+        resultado = await Adocao.aggregate([
+          {
+            $group: {
+              _id: '$id_adotante',
+              total_adocoes: { $sum: 1 }
+            }
+          },
+          {
+            $lookup: {
+              from: 'adotantes',
+              localField: '_id',
+              foreignField: '_id',
+              as: 'adotante_info'
+            }
+          },
+          { $unwind: '$adotante_info' },
+          {
+            $match: {
+              total_adocoes: { $gt: 0 }
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              adotante: '$adotante_info.nome',
+              email: '$adotante_info.email',
+              total_adocoes: 1
+            }
+          },
+          { $sort: { total_adocoes: -1 } }
+        ]);
+        break;
+        
+      case '5':
+        // 5. Animais nunca adotados
+        const animaisAdotados = await Adocao.distinct('id_animal');
+        resultado = await Animal.find({
+          _id: { $nin: animaisAdotados }
+        });
+        break;
+        
+      default:
+        return res.status(400).json({ erro: 'Consulta não encontrada' });
+    }
+    
+    res.json(resultado);
+    
   } catch (erro) {
     console.error(`Erro ao executar consulta ${consultaId}:`, erro);
-    res.status(500).json({ erro: `Erro ao executar a consulta` });
+    res.status(500).json({ erro: 'Erro ao executar a consulta' });
   }
 });
 

@@ -1,25 +1,34 @@
-const mysql = require('mysql2/promise');
+const mongoose = require('mongoose');
 
-// Cria um pool de conexões para o banco de dados MySQL
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,      // Endereço do servidor MySQL
-  user: process.env.DB_USER,      // Usuário do banco
-  password: process.env.DB_PASS,  // Senha do banco
-  database: process.env.DB_NAME,  // Nome do banco de dados
-  waitForConnections: true,       // Aguarda se todas as conexões estiverem ocupadas
-  connectionLimit: 10,            // Número máximo de conexões simultâneas
-  queueLimit: 0                   // Sem limite para fila de conexões
+// URL de conexão com o MongoDB
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/TheAnimalHome';
+
+// Configurações de conexão
+const connectDB = async () => {
+  try {
+    await mongoose.connect(MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('✅ Conectado ao MongoDB com sucesso!');
+  } catch (erro) {
+    console.error('❌ Erro ao conectar ao MongoDB:', erro.message);
+    process.exit(1); // Encerra a aplicação se não conseguir conectar
+  }
+};
+
+// Eventos de conexão
+mongoose.connection.on('connected', () => {
+  console.log('📊 Mongoose conectado ao MongoDB');
 });
 
-// Testa a conexão ao iniciar a aplicação
-pool.getConnection()
-  .then(conn => {
-    console.log('✅ Conectado ao MySQL com sucesso!');
-    conn.release(); // Libera a conexão após o teste
-  })
-  .catch(err => {
-    console.error('❌ Erro ao conectar ao MySQL:', err.message);
-  });
+mongoose.connection.on('error', (erro) => {
+  console.error('❌ Erro na conexão do Mongoose:', erro);
+});
 
-// Exporta o pool para ser usado nas consultas em outros arquivos
-module.exports = pool;
+mongoose.connection.on('disconnected', () => {
+  console.log('⚠️ Mongoose desconectado do MongoDB');
+});
+
+// Exporta a função de conexão
+module.exports = connectDB;

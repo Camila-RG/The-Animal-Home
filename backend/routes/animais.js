@@ -1,64 +1,46 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db/connection');
+const Animal = require('../models/Animal');
 
-// Lista todos os animais, permitindo filtros por query string
+// Lista todos os animais com filtros opcionais
 router.get('/', async (req, res) => {
   try {
     const { status, especie, porte, idade_min, idade_max } = req.query;
     
-    let query = 'SELECT * FROM Animal WHERE 1=1';
-    let params = [];
-
-    // Adiciona filtro pelo status do animal, se informado
-    if (status) {
-      query += ' AND status = ?';
-      params.push(status);
+    // Monta o filtro dinâmico
+    let filtro = {};
+    
+    if (status) filtro.status = status;
+    if (especie) filtro.especie = especie;
+    if (porte) filtro.porte = porte;
+    
+    // Filtros de idade
+    if (idade_min || idade_max) {
+      filtro.idade = {};
+      if (idade_min) filtro.idade.$gte = parseInt(idade_min);
+      if (idade_max) filtro.idade.$lte = parseInt(idade_max);
     }
-
-    // Adiciona filtro pela espécie do animal
-    if (especie) {
-      query += ' AND especie = ?';
-      params.push(especie);
-    }
-
-    // Adiciona filtro pelo porte do animal
-    if (porte) {
-      query += ' AND porte = ?';
-      params.push(porte);
-    }
-
-    // Filtro para idade mínima
-    if (idade_min) {
-      query += ' AND idade >= ?';
-      params.push(parseInt(idade_min));
-    }
-    // Filtro para idade máxima
-    if (idade_max) {
-      query += ' AND idade <= ?';
-      params.push(parseInt(idade_max));
-    }
-
-    query += ' ORDER BY id_animal DESC';
-
-    // Executa a consulta com os filtros aplicados
-    const [animais] = await db.query(query, params);
+    
+    // Busca com filtros e ordena por data de cadastro (mais recentes primeiro)
+    const animais = await Animal.find(filtro).sort({ createdAt: -1 });
+    
     res.json(animais);
   } catch (erro) {
-    // Loga o erro e retorna resposta padrão
     console.error('Erro ao buscar animais:', erro);
     res.status(500).json({ erro: 'Erro ao buscar animais' });
   }
 });
 
-// Lista animais que chegaram nos últimos 30 dias
+// Lista animais recém-chegados (últimos 30 dias)
 router.get('/recem-chegados', async (req, res) => {
   try {
-    const [animais] = await db.query(`
-      SELECT * FROM Animal 
-      WHERE data_chegada >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-      ORDER BY data_chegada DESC
-    `);
+    const trintaDiasAtras = new Date();
+    trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
+    
+    const animais = await Animal.find({
+      data_chegada: { $gte: trintaDiasAtras }
+    }).sort({ data_chegada: -1 });
+    
     res.json(animais);
   } catch (erro) {
     console.error('Erro ao buscar animais recém-chegados:', erro);
@@ -69,12 +51,10 @@ router.get('/recem-chegados', async (req, res) => {
 // Lista os 10 animais disponíveis há mais tempo
 router.get('/mais-antigos', async (req, res) => {
   try {
-    const [animais] = await db.query(`
-      SELECT * FROM Animal 
-      WHERE status = 'Disponível'
-      ORDER BY data_chegada ASC
-      LIMIT 10
-    `);
+    const animais = await Animal.find({ status: 'Disponível' })
+      .sort({ data_chegada: 1 })
+      .limit(10);
+    
     res.json(animais);
   } catch (erro) {
     console.error('Erro ao buscar animais mais antigos:', erro);
@@ -85,88 +65,97 @@ router.get('/mais-antigos', async (req, res) => {
 // Busca um animal específico pelo ID
 router.get('/:id', async (req, res) => {
   try {
-    const [animais] = await db.query(
-      'SELECT * FROM Animal WHERE id_animal = ?',
-      [req.params.id]
-    );
-
-    // Retorna erro se não encontrar animal
-    if (animais.length === 0) {
+    const animal = await Animal.findById(req.params.id);
+    
+    if (!animal) {
       return res.status(404).json({ erro: 'Animal não encontrado' });
     }
-
-    res.json(animais[0]);
+    
+    res.json(animal);
   } catch (erro) {
     console.error('Erro ao buscar animal:', erro);
     res.status(500).json({ erro: 'Erro ao buscar animal' });
   }
 });
 
-// Cadastra um novo animal no sistema
+// Cadastra um novo animal
 router.post('/', async (req, res) => {
   try {
-    const { nome, especie, idade, sexo, status, porte, data_chegada } = req.body;
-
-    // Validação dos campos obrigatórios
+    const { nome, especie, idade, sexo, status, porte, data_chegada, imagem_url } = req.body;
+    
+    // Validação básica (Mongoose já valida pelo Schema)
     if (!nome || !especie || !idade || !sexo) {
-      return res.status(400).json({ 
-        erro: 'Campos obrigatórios: nome, especie, idade, sexo' 
+      return res.status(400).json({
+        erro: 'Campos obrigatórios: nome, especie, idade, sexo'
       });
     }
-
-    // Insere o animal na base de dados
-    const [resultado] = await db.query(
-      'INSERT INTO Animal (nome, especie, porte, idade, sexo, status, data_chegada) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [nome, especie, porte || null, idade, sexo, status || 'Disponível', data_chegada || new Date()]
-    );
-
+    
+    // Cria novo animal
+    const novoAnimal = new Animal({
+      nome,
+      especie,
+      idade,
+      sexo,
+      porte,
+      imagem_url,
+      status: status || 'Disponível',
+      data_chegada: data_chegada || new Date()
+    });
+    
+    // Salva no banco
+    const animalSalvo = await novoAnimal.save();
+    
     res.status(201).json({
       mensagem: 'Animal cadastrado com sucesso!',
-      id_animal: resultado.insertId
+      id_animal: animalSalvo._id,
+      animal: animalSalvo
     });
   } catch (erro) {
     console.error('Erro ao cadastrar animal:', erro);
+    
+    // Erro de validação do Mongoose
+    if (erro.name === 'ValidationError') {
+      return res.status(400).json({ erro: erro.message });
+    }
+    
     res.status(500).json({ erro: 'Erro ao cadastrar animal' });
   }
 });
 
-// Atualiza os dados de um animal existente
+// Atualiza um animal existente
 router.put('/:id', async (req, res) => {
   try {
-    const { nome, especie, porte, idade, sexo, status } = req.body;
-    const { id } = req.params;
-
-    // Atualiza os dados no banco
-    const [resultado] = await db.query(
-      'UPDATE Animal SET nome = ?, especie = ?, porte = ?, idade = ?, sexo = ?, status = ? WHERE id_animal = ?',
-      [nome, especie, porte, idade, sexo, status, id]
+    const { nome, especie, porte, idade, sexo, status, imagem_url } = req.body;
+    
+    const animalAtualizado = await Animal.findByIdAndUpdate(
+      req.params.id,
+      { nome, especie, porte, idade, sexo, status, imagem_url },
+      { new: true, runValidators: true } // Retorna documento atualizado e valida
     );
-
-    // Se não encontrou animal para atualizar
-    if (resultado.affectedRows === 0) {
+    
+    if (!animalAtualizado) {
       return res.status(404).json({ erro: 'Animal não encontrado' });
     }
-
-    res.json({ mensagem: 'Animal atualizado com sucesso!' });
+    
+    res.json({
+      mensagem: 'Animal atualizado com sucesso!',
+      animal: animalAtualizado
+    });
   } catch (erro) {
     console.error('Erro ao atualizar animal:', erro);
     res.status(500).json({ erro: 'Erro ao atualizar animal' });
   }
 });
 
-// Remove um animal do sistema
+// Remove um animal
 router.delete('/:id', async (req, res) => {
   try {
-    const [resultado] = await db.query(
-      'DELETE FROM Animal WHERE id_animal = ?',
-      [req.params.id]
-    );
-
-    // Se não encontrou animal para remover
-    if (resultado.affectedRows === 0) {
+    const animalRemovido = await Animal.findByIdAndDelete(req.params.id);
+    
+    if (!animalRemovido) {
       return res.status(404).json({ erro: 'Animal não encontrado' });
     }
-
+    
     res.json({ mensagem: 'Animal removido com sucesso!' });
   } catch (erro) {
     console.error('Erro ao remover animal:', erro);
@@ -174,5 +163,4 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Exporta as rotas para uso no app principal
 module.exports = router;
