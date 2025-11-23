@@ -94,9 +94,6 @@ cd The-Animal-Home
 
 -----
 
-\<details\>
-\<summary\>📂 \<strong\>Clique aqui para ver instruções da Versão Legada (MySQL)\</strong\>\</summary\>
-
 ### 🏛️ Instruções para Commits Anteriores (SQL)
 
 Estas instruções aplicam-se apenas se você estiver rodando uma versão antiga do código fonte que utilizava MySQL.
@@ -129,7 +126,7 @@ Estas instruções aplicam-se apenas se você estiver rodando uma versão antiga
 
       - Use o "Live Server" do VS Code no arquivo `index.html`.
 
-\</details\>
 
 ```
 ```
+
