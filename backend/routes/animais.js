@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Lista animais recém-chegados (últimos 30 dias)
+// Lista animais recém-chegados
 router.get('/recem-chegados', async (req, res) => {
   try {
     const trintaDiasAtras = new Date();
@@ -62,7 +62,7 @@ router.get('/mais-antigos', async (req, res) => {
   }
 });
 
-// Busca um animal específico pelo ID
+// Busca um animal específico
 router.get('/:id', async (req, res) => {
   try {
     const animal = await Animal.findById(req.params.id);
@@ -147,7 +147,6 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Remove um animal
 // Remove um animal
 router.delete('/:id', async (req, res) => {
   try {
