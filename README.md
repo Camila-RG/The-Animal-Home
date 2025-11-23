@@ -125,8 +125,3 @@ Estas instruções aplicam-se apenas se você estiver rodando uma versão antiga
 3.  **Frontend:**
 
       - Use o "Live Server" do VS Code no arquivo `index.html`.
-
-
-```
-```
-
